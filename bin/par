@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# par — paragent CLI dispatcher（herdr 并行 agent 编排；薄 skill 只是路由）。
+# PAR_RESOLVE_ONLY=1：只打印「脚本名 [mapped-args…]」到 stdout，不 exec（测试用）。
+set -euo pipefail
+
+SELF="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || printf '%s' "${BASH_SOURCE[0]}")"
+SELF_DIR="$(cd "$(dirname "$SELF")" && pwd)"
+
+par_fail() { echo "PAR-FAIL: $*" >&2; exit 1; }
+
+par_home() {
+  if [ -n "${PAR_HOME:-}" ] && [ -d "${PAR_HOME}/scripts" ]; then
+    printf '%s\n' "$PAR_HOME"
+    return 0
+  fi
+  if [ -f "${HOME}/.paragent-home" ]; then
+    local h
+    h=$(tr -d '[:space:]' < "${HOME}/.paragent-home" 2>/dev/null || true)
+    if [ -n "$h" ] && [ -d "$h/scripts" ]; then
+      printf '%s\n' "$h"
+      return 0
+    fi
+  fi
+  local root
+  root="$(cd "$SELF_DIR/.." && pwd)"
+  if [ -d "$root/scripts" ] && [ -f "$root/VERSION" ]; then
+    printf '%s\n' "$root"
+    return 0
+  fi
+  echo "PAR-FAIL: 无法解析 PAR_HOME。先跑 bash scripts/install.sh" >&2
+  exit 1
+}
+
+usage() {
+  cat <<'EOF'
+par — herdr 并行 agent 编排（五原语：dev/research/review/ix/triad）
+
+用法正本: references/parallel.md
+
+  wave     par wave --mode dev t1=@dev/a t2=@dev/b      # 并行分支/开叉（→ verify → 人确认 → merge）
+           par wave --mode research t1=@research/a …    # 并行研究/分析（只读）
+           par wave --mode review t1=@review/a t2=@review/b   # 双轨交叉审（预写 task.md）
+  run      par run <tid> @dev/a [--mode …] [--brief "…"]
+  ix       par ix open → ix fire a|b "…" → ix take|collect → ix close   # 并行合作/交流
+           par ix archive [--json]                      # 归档清单/汇总
+  triad    par triad open [--mode …] → triad fire "题" → take|collect → triad close
+           par-triad relay <席> "<回话>"                 # 席位互注闸控通道
+  verify   par verify <tid> --cmd "<验证命令>"
+  merge    par merge <tid>…      # 人确认后；打印 checklist 三行
+  discard  par discard <tid>…    # 丢弃（卸 wt/删分支）
+
+共用: context | gate [--quick|--full] | smoke [--live] | nightly run|install|status
+      close-tasks | version-check [--remote] | install | version | help
+
+完成真源: herdr metadata tokens.par_result（锚 <tid>#<attempt>）；禁扫终端判完成。
+EOF
+}
+
+par_run() {
+  local script="$1" verb="$2"; shift 2
+  local home path
+  home="$(par_home)"
+  path="$home/scripts/$script"
+  if [ "${PAR_RESOLVE_ONLY:-}" = 1 ]; then
+    if [ $# -gt 0 ]; then printf '%s %s\n' "$script" "$*"; else printf '%s\n' "$script"; fi
+    exit 0
+  fi
+  [ -f "$path" ] || par_fail "映射脚本缺失: $path"
+  export PAR_HOME="$home"
+  bash "$path" "$@"
+  # --json 时 stdout 须纯 JSON；PASS 走 stderr
+  case " $* " in *" --json "*|*" -j "*) echo "PAR-ROUTE-PASS（$verb）" >&2 ;;
+    *) echo "PAR-ROUTE-PASS（$verb）" ;;
+  esac
+}
+
+cmd="${1:-}"
+[ $# -gt 0 ] && shift || true
+case "$cmd" in
+  -h|--help|help|"") usage; exit 0 ;;
+  -V|--version|version) home="$(par_home)"; tr -d '[:space:]' < "$home/VERSION"; printf '\n'; exit 0 ;;
+  wave)   par_run par-wave.sh wave "$@" ;;
+  run)    par_run par-run.sh run "$@" ;;
+  verify) par_run par-verify.sh verify "$@" ;;
+  merge)  par_run par-merge.sh merge "$@" ;;
+  discard) par_run par-discard.sh discard "$@" ;;
+  ix)     par_run par-ix.sh ix "$@" ;;
+  triad)  par_run par-triad.sh triad "$@" ;;
+  relay)  par_run par-triad.sh relay relay "$@" ;;
+  context|ctx|where) par_run context.sh context "$@" ;;
+  gate)   par_run par-gate.sh gate "$@" ;;
+  nightly) par_run par-nightly.sh nightly "$@" ;;
+  smoke)  par_run par-smoke.sh smoke "$@" ;;
+  version-check|versions) par_run version-check.sh version-check "$@" ;;
+  install) par_run install.sh install "$@" ;;
+  close-tasks)
+    home="$(par_home)"
+    # shellcheck disable=SC1091
+    . "$home/scripts/par-lib.sh"
+    export PAR_CLOSE_PANE=1
+    # 排除 ix/triad 席（mode=ix/triad）；交互席仅 par ix|triad close
+    par_close_all_task_panes "${1:-$PWD}"
+    echo "PAR-ROUTE-PASS（close-tasks）"
+    ;;
+  *) usage >&2; exit 2 ;;
+esac
