@@ -27,8 +27,8 @@ SRC_VER=$(tr -d '[:space:]' < "$ROOT/VERSION" 2>/dev/null || echo missing)
 DRIFT=0
 ROWS=()
 
-_skill_ver() {  # $1=skills/par 目录
-  sed -n 's/^  version: *"\([^"]*\)".*/\1/p; s/^  version: *\([^" ].*\)/\1/p' "$1/SKILL.md" 2>/dev/null | head -1
+_skill_ver() {  # $1=skills/par 目录（容忍 gh install 重排 frontmatter 的任意缩进）
+  awk '/^ *version:/ { gsub(/"/, "", $2); print $2; exit }' "$1/SKILL.md" 2>/dev/null
 }
 
 _row() { # label status detail
@@ -70,7 +70,7 @@ if [ "$REMOTE" = 1 ]; then
     for r in .claude/skills/par .codex/skills/par .kimi-code/skills/par; do
       ssh -o BatchMode=yes -o ConnectTimeout=8 "$h" "test -f \"\$HOME/$r/SKILL.md\"" 2>/dev/null || continue
       v=$(ssh -o BatchMode=yes -o ConnectTimeout=12 "$h" \
-        "sed -n 's/^  version: *\"\([^\"]*\)\".*/\1/p' \"\$HOME/$r/SKILL.md\" | head -1" 2>/dev/null)
+        "awk '/^ *version:/ { gsub(/\"/, \"\", \$2); print \$2; exit }' \"\$HOME/$r/SKILL.md\"" 2>/dev/null)
       if [ "$v" = "$SRC_VER" ]; then
         _row "remote:$h/par" OK "ver=$v"
       else
