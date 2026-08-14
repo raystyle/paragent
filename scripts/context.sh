@@ -8,8 +8,8 @@ set -euo pipefail
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_DIR="$(cd "$SELF_DIR/.." && pwd)"
 PAR_ENTRY="$(cd "$SELF_DIR/.." && pwd)/bin/par"
-AGENT_ENTRY="$SELF_DIR/agent.sh"
-PANE_ENTRY="$SELF_DIR/pane.sh"
+AGENT_ENTRY="herdr agent start|prompt|wait|get"
+PANE_ENTRY="herdr pane get|close|report-metadata"
 
 JSON=0
 TID=""
@@ -229,7 +229,7 @@ if [ "$JSON" = 1 ]; then
     '{
       layers: {
         herdr: "runtime: pane/session/agent primitives",
-        workspace: "routing skill + par/pane/agent scripts (this skill)",
+        workspace: "routing skill + par CLI (this skill)",
         center: "mesh/token/SSH certs — not this skill"
       },
       selling_points: ["matrix model-cmd tracks", "par_result metadata token completion"],
@@ -266,8 +266,8 @@ if [ "$JSON" = 1 ]; then
       } end),
       entries: {
         par: "par wave|run|discuss|triad|context|close-tasks|verify|merge|discard|gate|smoke|nightly",
-        agent: "agent.sh ensure|check|test|context|harness",
-        pane: "pane.sh dir|file|code|run|close|…"
+        agent: "herdr agent start|prompt|wait|get",
+        pane: "herdr pane get|close|report-metadata"
       },
       token: { source: $meta_src, key: $meta_key },
       harness: $harness
@@ -281,7 +281,7 @@ cat <<EOF
 
 ## 三层
 - herdr     = runtime（pane/session/agent 原语）
-- workspace = 本 skill（routing + par/pane/agent 脚本）
+- workspace = 本 skill（routing + par CLI）
 - center    = mesh/token/SSH 证（不在本 skill 签发）
 
 卖点: 矩阵轨 model-cmd + par_result metadata token 完成真源（不是又一个 TUI）。
@@ -295,8 +295,8 @@ cat <<EOF
 - skill_dir:        $SKILL_DIR
 
 ## 入口
-- par:   $PAR_ENTRY  (wave|run|verify|merge|context|test|help)
-- agent: $AGENT_ENTRY (ensure|check|test|context|harness)
+- par:   $PAR_ENTRY  (wave|run|discuss|triad|verify|merge|context|help)
+- agent: $AGENT_ENTRY
 - pane:  $PANE_ENTRY
 EOF
 

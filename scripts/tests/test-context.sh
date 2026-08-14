@@ -38,6 +38,19 @@ echo "$d" | grep -q -- '--source parallel' && pass "token-source" || fail "sourc
 J=$(bash "$CTX" --json 2>/dev/null) || fail "context-json-rc"
 echo "$J" | jq -e '.layers.herdr and .harness.codex.stdin=="must_close" and .token.key=="par_result"' >/dev/null \
   && pass "context-json-shape" || fail "json-shape"
+echo "$J" | jq -r '.entries.agent' | grep -q 'herdr agent' \
+  && pass "context-entries-agent-herdr" || fail "entries.agent=$(echo "$J" | jq -r '.entries.agent')"
+echo "$J" | jq -r '.entries.pane' | grep -q 'herdr pane' \
+  && pass "context-entries-pane-herdr" || fail "entries.pane=$(echo "$J" | jq -r '.entries.pane')"
+echo "$J" | jq -r '.entries.agent,.entries.pane,.skill.agent,.skill.pane' \
+  | grep -qE 'agent\.sh|pane\.sh' && fail "context 仍指向缺失脚本" || pass "context-no-missing-scripts"
+
+# 用法正本不得指向不存在的 par.sh / parallel/scripts
+if grep -nE 'scripts/par\.sh|parallel/scripts' "$ROOT/references/parallel.md"; then
+  fail "parallel.md 仍指向不存在入口"
+else
+  pass "parallel-md-current-entry"
+fi
 
 # 无效 tid
 bash "$CTX" --json --tid __no_tid__ 2>/dev/null && fail "bad-tid-should-fail" || pass "context-bad-tid"

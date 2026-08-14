@@ -1,6 +1,6 @@
 # models — 拷问阶段模型取证选择（三家收敛矩阵）
 
-> **归属**：workspace 并行原语（`scripts/par.sh` / `parallel/` 载荷）的模型目录单点。**拷问阶段每个任务的档位（model-cmd）必须从本矩阵选**——不写矩阵外的型号，不凭记忆写端写法。
+> **归属**：workspace 并行原语（`bin/par` / `parallel/` 载荷）的模型目录单点。**拷问阶段每个任务的档位（model-cmd）必须从本矩阵选**——不写矩阵外的型号，不凭记忆写端写法。
 > **收敛决策**：四类锁定矩阵——**极速** · **开发** · **审阅** · **研究**（见下）。CPA 三端（cc/cx/pi）仍作 worker 备用写法；主派选跟锁定矩阵。  
 > **档案**：`PAR_MATRIX_PROFILE=local`（默认·主控满矩阵）| `remote`（远程 CPA 子集，见下「远程矩阵」）。轨前缀 `@remote/…` / `@local/…` 可单次覆盖。  
 > **端写法纪律**：claude=`claude --model '<id>'`；codex=`codex -m <id>`；pi=`pi --model <供应商>/<id>`；原生：`grok -m …` / `kimi -m kimi-code/…`（配置键带 `kimi-code/` 前缀）。
@@ -19,16 +19,16 @@
 ```bash
 # 远程会话整波
 export PAR_MATRIX_PROFILE=remote
-par.sh wave --mode research t1=@research/a          # → deepseek-pro@codex
-par.sh wave --mode develop      t1=@develop/a               # → glm-5.2@claude
-par.sh run  t-fast @speed/a --mode research         # → flash@codex
+par wave --mode research t1=@research/a          # → deepseek-pro@codex
+par wave --mode develop      t1=@develop/a               # → glm-5.2@claude
+par run  t-fast @speed/a --mode research         # → flash@codex
 
 # 或单次前缀（不改 env）
-par.sh run t1 @remote/develop/a --mode develop
-par.sh run t2 @remote/review/b                      # 审阅 B 仍 gpt
+par run t1 @remote/develop/a --mode develop
+par run t2 @remote/review/b                      # 审阅 B 仍 gpt
 ```
 
-- 远程表：`parallel/references/matrix-remote.json`（`@speed/*` `@develop/*` `@research/*` 别名均收敛到上表唯一轨）。  
+- 远程表：`references/matrix-remote.json`（`@speed/*` `@develop/*` `@research/*` 别名均收敛到上表唯一轨）。  
 - **主控**仍用默认 local 满矩阵（下节）；远程不要派 `@develop/a` 期望 k3——remote 下 a/b/c 都是 glm。  
 - 远程 agent 就绪：`agent.sh ensure <host>` 装 claude+codex（+pi 可选）；**不要求** kimi/grok。
 

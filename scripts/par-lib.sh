@@ -414,7 +414,7 @@ par_close_task_pane() {
 }
 
 # 关本仓 .parallel/*/pane 列出的任务窗（不清主栏）
-# 跳过 mode=discuss / 目录 discuss-*：并行交互席只允许 par.sh discuss close 显式关
+# 跳过 discuss/triad 交互席：只允许 par discuss|triad close 显式关
 par_close_all_task_panes() {
   local root td pane layout mode base
   root="${1:-$PWD}"
@@ -423,9 +423,10 @@ par_close_all_task_panes() {
     base=$(basename "$td")
     case "$base" in
       discuss|discuss-*) continue ;;  # .parallel/discuss/ · discuss-claude · discuss-codex
+      triad|triad-*) continue ;;      # .parallel/triad/ · triad-chief · triad-a · triad-b
     esac
     mode=$(sed -n 's/^mode=//p' "${td}meta" 2>/dev/null | head -1)
-    [ "$mode" = discuss ] && continue
+    case "$mode" in discuss|triad) continue ;; esac
     pane=$(cat "${td}pane" 2>/dev/null || true)
     layout=$(sed -n 's/^layout=//p' "${td}meta" 2>/dev/null | head -1)
     layout=${layout:-tab}

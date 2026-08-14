@@ -301,11 +301,11 @@ parallel: discuss ready（两令制 · 右 stack · 不自动关窗）
 
 两令制（并行多任务）— 禁止合成「一个大 command」齐等:
   # 令1 fire：只派发（可连发多席/多题）
-  par.sh discuss fire a "议题A"
-  par.sh discuss fire b "议题B"
+  par discuss fire a "议题A"
+  par discuss fire b "议题B"
   # 令2 take：只收已 READY（非阻塞；无 ready → rc3，立刻干别的）
-  par.sh discuss take --read              # 先到的先吐；可再 fire 新题
-  par.sh discuss take --all --read        # 本拍所有 READY 一次收
+  par discuss take --read              # 先到的先吐；可再 fire 新题
+  par discuss take --all --read        # 本拍所有 READY 一次收
   # 循环：fire … / take … / fire 跟进 … / take …
 
   勿: wait all 包进同一条长命令。可选 wait --any 仅人眼守候。
@@ -494,7 +494,7 @@ cmd_prompt() {
     claude) pane=$CLAUDE_PANE ;;
     codex)  pane=$CODEX_PANE ;;
   esac
-  [ -n "$pane" ] || { err "无 $role pane（先 par.sh discuss open）"; exit 2; }
+  [ -n "$pane" ] || { err "无 $role pane（先 par discuss open）"; exit 2; }
   # 本轮 tid#attempt + 清旧 token；消息尾追加完成上报指令
   local tid att done_cmd blocked_cmd
   read -r tid att < <(_discuss_round_mark_prompt "$role" "$pane")

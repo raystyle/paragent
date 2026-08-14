@@ -368,10 +368,10 @@ parallel: triad ready（三席 · 状态驱动互话 · 主控零轮询）
   mode=${MODE}  session $TRIAD_ROOT/session
 
 节奏:
-  par.sh triad fire "题目"          # 只派首席；席位由首席派发、互看状态回话
-  par.sh triad take --all --read    # 非阻塞收割（rc3=无本轮 token）
-  par.sh triad collect --all --read # 人类兜底：wait→take
-  par.sh triad close
+  par triad fire "题目"          # 只派首席；席位由首席派发、互看状态回话
+  par triad take --all --read    # 非阻塞收割（rc3=无本轮 token）
+  par triad collect --all --read # 人类兜底：wait→take
+  par triad close
 EOF
 }
 
@@ -516,7 +516,7 @@ cmd_fire() {
   msg=$(printf '%s' "$msg" | sed 's/^ //')
   [ -n "$msg" ] || { err "fire 消息为空"; exit 1; }
   _triad_load_session
-  [ -n "${CHIEF_PANE:-}" ] || { err "无 triad session（先 par.sh triad open）"; exit 2; }
+  [ -n "${CHIEF_PANE:-}" ] || { err "无 triad session（先 par triad open）"; exit 2; }
   local tid att
   read -r tid att < <(_triad_round_mark_prompt chief "$CHIEF_PANE")
   _triad_replied_reset
@@ -831,7 +831,7 @@ cmd_relay() {
   done
   [ -n "$target" ] && [ -n "$msg" ] || { err "用法: relay <triad-chief|triad-a|triad-b> \"<msg>\""; exit 2; }
   _triad_load_session
-  [ -n "${CHIEF_PANE:-}" ] || { err "无 triad session（先 par.sh triad open）"; exit 2; }
+  [ -n "${CHIEF_PANE:-}" ] || { err "无 triad session（先 par triad open）"; exit 2; }
 
   # 发送者：$HERDR_PANE_ID 须在三席（主窗/外部隔离）
   local sender="" self="${HERDR_PANE_ID:-}"

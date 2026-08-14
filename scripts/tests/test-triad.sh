@@ -192,6 +192,18 @@ else
 fi
 [ -f .parallel/triad/chief/pane ] && pass "triad-still-registered" || fail "triad pane 文件丢了"
 
+# 一级 triad-* / mode=triad 必须显式跳（不得只靠两级目录深度巧合）
+mkdir -p .parallel/triad-chief
+echo "wT:p80" > .parallel/triad-chief/pane
+printf 'mode=triad\nlayout=stack\n' > .parallel/triad-chief/meta
+: > "$STUB_LOG"
+par_close_all_task_panes "$FIX"
+if grep -qE 'pane close wT:p80( |$)' "$STUB_LOG"; then
+  fail "close-tasks 误关一级 triad-chief: $(cat "$STUB_LOG")"
+else
+  pass "close-tasks-skip-triad-toplevel"
+fi
+
 # ── close 显式关三席 ──
 : > "$STUB_LOG"
 bash "$TRIAD" close || fail "close rc"

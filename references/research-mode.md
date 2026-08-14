@@ -1,6 +1,6 @@
 # research-mode — 并行研究/分析细则
 
-> 用法正本：`../../references/parallel.md`（四原语卡）。本文件 = research 细则。
+> 用法正本：`../../references/parallel.md`（五原语卡）。本文件 = research 细则。
 
 ## explorer 契约(预写进 task.md;参考 Claude Code exploreAgent)
 

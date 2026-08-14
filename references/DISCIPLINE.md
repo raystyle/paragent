@@ -1,7 +1,7 @@
 # 并行任务原语（workspace 载荷 · 非独立 skill）
 
-> **不是**可安装 skill。入口只有 workspace：`scripts/par.sh`；本目录 = 脚本/纪律载荷。  
-> **用法正本（先读这个）**：`../references/parallel.md`（develop / research / review / discuss 四原语一张表）。  
+> **不是**可安装 skill。入口只有全局 CLI `par`（`bin/par`）；本目录 = 脚本/纪律载荷。  
+> **用法正本（先读这个）**：`../references/parallel.md`（develop / research / review / discuss / triad 五原语一张表）。  
 > **生产级路线**：`references/production-roadmap.md`（L1 主路径 / L2 加固 / L3 完整）。  
 > 本文件 = 纪律与门禁深钻；模型矩阵 `references/models.md`。  
 > 模式：规划 grill + 交付确认（人在环）；中间 par-* 全自动。
@@ -39,22 +39,22 @@ herdr pane report-metadata "$HERDR_PANE_ID" --source parallel \
 ## 并行分支/开叉（develop 模式）
 
 1. grill 拆成 N 个**零文件重叠**子任务(每个:范围/brief/verify 命令/档位)→ plan.md 落 `.parallel/` → 人确认。
-2. 渐进批量派发:`par.sh wave --mode develop t1=@develop/a t2=@develop/b t3=@develop/c`（**tab 布局**+worktree；每任务一 tab）。model-cmd 可用矩阵轨 `@develop/a` 或裸命令。
-3. 各任务 done 后:`par.sh verify <tid> --cmd "<规划定的 verify 命令>"`。
-4. 全绿 → 主 agent 汇总评估 diff → 人确认 → `par.sh merge <tid>...`。
+2. 渐进批量派发:`par wave --mode develop t1=@develop/a t2=@develop/b t3=@develop/c`（**tab 布局**+worktree；每任务一 tab）。model-cmd 可用矩阵轨 `@develop/a` 或裸命令。
+3. 各任务 done 后:`par verify <tid> --cmd "<规划定的 verify 命令>"`。
+4. 全绿 → 主 agent 汇总评估 diff → 人确认 → `par merge <tid>...`。
 细则与失败处理见 references/develop-mode.md。
 
 ## 并行研究/分析（research 模式）
 
 1. grill 拆成 N 个探索问题(档位/路数/产出形态当次现定)→ 人确认。
-2. 渐进批量派发:`par.sh wave --mode research t1=@research/a t2=@research/b t3=@research/c`（**tab 布局**；每任务一 tab）。task.md 按 references/research-mode.md 预写。
+2. 渐进批量派发:`par wave --mode research t1=@research/a t2=@research/b t3=@research/c`（**tab 布局**；每任务一 tab）。task.md 按 references/research-mode.md 预写。
 3. 各 artifact 收回 → 主 agent 汇总评估 → 人确认最终结论。
 细则见 references/research-mode.md。
 
 ## 并行 review/审核（review 模式）
 
 1. grill 定审阅范围(commit/PR/diff)与双轨档位 → 人确认。
-2. 预写 `.parallel/<tid>/task.md` → `par.sh wave --mode review t-a=@review/a t-b=@review/b`（**tab**；只读无 worktree）。
+2. 预写 `.parallel/<tid>/task.md` → `par wave --mode review t-a=@review/a t-b=@review/b`（**tab**；只读无 worktree）。
 3. 收齐 artifact（判定 + P0/P1）→ 主 agent 交叉汇总 → 人确认。
 细则见 references/review-mode.md。
 

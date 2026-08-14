@@ -1,8 +1,8 @@
 # interactive-mode — 并行合作/交流（两令制）
 
-> 用法正本：`../../references/parallel.md`（四原语卡）。本文件 = discuss 细则。
+> 用法正本：`../../references/parallel.md`（五原语卡）。本文件 = discuss 细则。
 
-入口：`par.sh discuss` → `parallel/scripts/par-discuss.sh`。
+入口：`par discuss` → `scripts/par-discuss.sh`。
 
 ## 形态（三窗）
 
@@ -18,10 +18,10 @@
 
 | 令 | 命令 | 行为 | 阻塞？ |
 |---|---|---|---|
-| **1 fire** | `par.sh discuss fire a\|b "…"` | **只派发**，火即返 | 否 |
-| **2 take** | `par.sh discuss take [--all] [--read]` | **只收**已 READY | 否（无则 rc3） |
+| **1 fire** | `par discuss fire a\|b "…"` | **只派发**，火即返 | 否 |
+| **2 take** | `par discuss take [--all] [--read]` | **只收**已 READY | 否（无则 rc3） |
 
-**编排糖（非第三令）**：`par.sh discuss collect [--all\|a\|b] [--read]` = `wait` → `take`。  
+**编排糖（非第三令）**：`par discuss collect [--all\|a\|b] [--read]` = `wait` → `take`。  
 主控「派完自动收」用它；**不**把阻塞塞进 `fire`（fire 永异步）。
 
 ```text
@@ -36,24 +36,24 @@
 ```
 
 ```bash
-par.sh discuss open
+par discuss open
 # ── 令1：连发 ──
-par.sh discuss fire a "议题A"
-par.sh discuss fire b "议题B"
+par discuss fire a "议题A"
+par discuss fire b "议题B"
 # ── 令2：收割（非阻塞）──
-par.sh discuss take --read           # rc0 有货 · rc3 全 busy（稍后再 take）
-par.sh discuss take --all --read     # 本拍所有 READY
-par.sh discuss fire a "跟进A"        # 可继续派，不必等 b
-par.sh discuss take b --read         # 指定席
+par discuss take --read           # rc0 有货 · rc3 全 busy（稍后再 take）
+par discuss take --all --read     # 本拍所有 READY
+par discuss fire a "跟进A"        # 可继续派，不必等 b
+par discuss take b --read         # 指定席
 # ── 编排糖：主控派完自动收（双席终验）──
-par.sh discuss collect --all --read  # = wait all + take --all --read
+par discuss collect --all --read  # = wait all + take --all --read
 ```
 
 **反模式（禁止）**
 
 ```bash
 # 一个 command 里 wait all / 长阻塞 = 同步 barrier，毁并行
-par.sh discuss prompt a "…" && par.sh discuss prompt b "…" && par.sh discuss wait all
+par discuss prompt a "…" && par discuss prompt b "…" && par discuss wait all
 # fire 带 --wait（已禁）；阻塞只走 wait / collect
 ```
 
@@ -85,9 +85,9 @@ herdr pane report-metadata "$HERDR_PANE_ID" --source parallel \
 ## 开席 / 关席
 
 ```bash
-par.sh discuss open [--a @review/a] [--b @review/b]
-par.sh discuss status [--json]
-par.sh discuss close                 # 仅显式关右席
+par discuss open [--a @review/a] [--b @review/b]
+par discuss status [--json]
+par discuss close                 # 仅显式关右席
 ```
 
 `close-tasks` **跳过** discuss。兼容：`prompt`/`poll`/`wait` 仍可用，但文档与主路径以 **fire/take** 为准。

@@ -1,11 +1,11 @@
 # review-mode — 并行 review/审核细则
 
-> 用法正本：`../../references/parallel.md`（四原语卡）。本文件 = review 细则。
+> 用法正本：`../../references/parallel.md`（五原语卡）。本文件 = review 细则。
 
 ## 一等 mode
 
 ```bash
-par.sh wave --mode review t-a=@review/a t-b=@review/b
+par wave --mode review t-a=@review/a t-b=@review/b
 # 等价语义：只读、无 worktree、tab 布局、交付 artifact.md + par_result
 # 默认轨：@review/a = Opus · @review/b = GPT
 ```
@@ -41,6 +41,6 @@ par.sh wave --mode review t-a=@review/a t-b=@review/b
 ## 主控流程
 
 1. 预写各 `.parallel/<tid>/task.md`（范围：commit / PR / 工作区 diff / 文件列表）。  
-2. `par.sh wave --mode review t-a=@review/a t-b=@review/b`。  
+2. `par wave --mode review t-a=@review/a t-b=@review/b`。  
 3. 收齐 artifact → 交叉比对 → 汇总报人。  
 4. 不 merge；改代码走 **develop** 原语。

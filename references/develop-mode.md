@@ -1,18 +1,18 @@
 # develop-mode — 并行分支/开叉细则
 
-> 用法正本：`../../references/parallel.md`（四原语卡）。本文件 = develop 细则。
+> 用法正本：`../../references/parallel.md`（五原语卡）。本文件 = develop 细则。
 
 ## 流程(主 agent 逐步)
 
 ```bash
 # 0. 规划:grill 拆好,写 .parallel/plan.md + 预写各 .parallel/<tid>/task.md
 # 1. 渐进批量派发(一条后台命令;事件驱动:一个 agent 回执 working 才启动下一个,避免并发 recruit 撞 herdr 锁):
-bash skills/workspace/scripts/par.sh wave --mode develop t-foo=@develop/a t-bar=@develop/b t-bar2=@develop/c
+par wave --mode develop t-foo=@develop/a t-bar=@develop/b t-bar2=@develop/c
 #    (单任务才用 par-run.sh;--launch-only 只启动不收割,供 par-wave 调用)
 # 2. 各任务回调 done 后逐个 verify:
-bash skills/workspace/scripts/par.sh verify t-foo --cmd "cargo test foo"
+par verify t-foo --cmd "cargo test foo"
 # 3. 全绿 → 汇总评估 diff 报人 → 人确认 → merge:
-bash skills/workspace/scripts/par.sh merge t-foo t-bar
+par merge t-foo t-bar
 ```
 
 ## 失败处理
@@ -37,9 +37,9 @@ bash skills/workspace/scripts/par.sh merge t-foo t-bar
 极限测 / 失败波 / 明确不要合进主线时：
 
 ```bash
-bash skills/workspace/scripts/par.sh discard t-foo t-bar
+par discard t-foo t-bar
 ```
 
 - 关任务窗（若 pane 仍在）→ `git worktree remove --force` → `git branch -D par/<tid>` → `state=discarded`。
-- **不要**对烟雾弹任务跑 `par.sh merge`（会把探针文件合进 main）。
+- **不要**对烟雾弹任务跑 `par merge`（会把探针文件合进 main）。
 - `.parallel/<tid>/` 目录默认保留 artifact 备查；全清：`rm -rf .parallel`（仓根已 gitignore）。

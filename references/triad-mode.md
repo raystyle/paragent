@@ -2,7 +2,7 @@
 
 > 用法正本：`../../references/parallel.md`（原语卡）。本文件 = triad 协议正本。
 
-入口：`par.sh triad` → `parallel/scripts/par-triad.sh`。
+入口：`par triad` → `scripts/par-triad.sh`。
 
 ## 形态（三席）
 
@@ -18,7 +18,7 @@
 ## 控制流（主控零轮询）
 
 ```text
-人/主控  par.sh triad fire "题目"          # 只 prompt 首席，火即返（禁 --wait）
+人/主控  par triad fire "题目"          # 只 prompt 首席，火即返（禁 --wait）
 chief    拆题 → herdr agent prompt triad-a/triad-b "<子题+席位协议>"   # 派发即返，不 wait
 席位     清旧 token → 做题 → 长文落 artifact 文件 → report-metadata 报 token
          → peer 阶段：agent wait 对方（idle|done|blocked）→ 读对方 token
@@ -59,14 +59,14 @@ chief    被回话注入唤醒 → 综合 → report-metadata PAR-DONE triad-chi
 ## 命令
 
 ```bash
-par.sh triad open [--mode research|review|discuss] [--chief|--a|--b <轨|cmd>] [--force]
-par.sh triad fire "题目"                 # 只派首席（附协作协议尾），火即返
-par.sh triad take [chief|a|b|--all] [--read] [--json]
-par.sh triad relay <triad-chief|triad-a|triad-b> "<回话>"   # 席位互注闸控通道（rc4 隔离/rc5 状态闸/rc6 主窗/rc7 上限）
-par.sh triad collect [...]               # 兜底：wait→take
-par.sh triad status [--json]
-par.sh triad wait [chief|a|b|--any|--all] [--timeout-ms N]
-par.sh triad close
+par triad open [--mode research|review|discuss] [--chief|--a|--b <轨|cmd>] [--force]
+par triad fire "题目"                 # 只派首席（附协作协议尾），火即返
+par triad take [chief|a|b|--all] [--read] [--json]
+par triad relay <triad-chief|triad-a|triad-b> "<回话>"   # 席位互注闸控通道（rc4 隔离/rc5 状态闸/rc6 主窗/rc7 上限）
+par triad collect [...]               # 兜底：wait→take
+par triad status [--json]
+par triad wait [chief|a|b|--any|--all] [--timeout-ms N]
+par triad close
 ```
 
 - 席位 token 锚 = `triad-<a|b>#<首席当前 attempt>`：首席每 fire 涨号，旧轮席位 token 自动失效。

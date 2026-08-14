@@ -5,7 +5,7 @@ description: "herdr 并行 agent 编排（薄路由；实现=全局 CLI `par`）
 compatibility: "herdr 0.7.5+、jq、git、python3；先 bash scripts/install.sh 装 CLI。"
 metadata:
   author: rayh4c
-  version: "1.1.0"
+  version: "1.1.1"
   user-invocable: "true"
   form: routing
 ---

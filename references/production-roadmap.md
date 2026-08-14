@@ -16,10 +16,10 @@
 | **L3** | 完整生产（门禁） | 多端指纹 · smoke · 归档 · 装机 check | **代码侧完整生产** |
 | **维持** | 挂载在跑 | nightly cron · 值守 live · 合并前 gate 习惯 | **完整生产在维持** |
 
-**硬规则（四原语共用）**
+**硬规则（五原语共用）**
 
 1. 完成真源 = `tokens.par_result` 锚定 `<tid>#<attempt>` + 非空结论（**禁**仅靠 `agent_status` / 扫终端）。  
-2. 入口唯一：`scripts/par.sh`；`parallel/` 无独立 skill。  
+2. 入口唯一：全局 CLI `par`（`bin/par`）；skill 只路由。  
 3. 布局：wave/run 默认 tab；discuss 仅 stack 右双席且只 `discuss close`。  
 4. 错误靠脚本退出码 + 标记文件，不靠「记得要 report」。
 
@@ -32,12 +32,12 @@
 | **L1** 主路径 | **完成** | 阶段 A |
 | **L2** 生产加固 | **完成** | **0.6.8** 阶段 B |
 | **L3** 门禁脚本 | **完成** | **0.6.9** 阶段 C |
-| **维持脚本** | **完成** | **0.6.10** `par.sh gate` · `par.sh nightly` |
-| **nightly cron 挂载** | **完成 2026-08-13** | `par.sh nightly install`（03:15 本地，首跑 PAR-NIGHTLY-PASS） |
-| **值守 live smoke** | **完成 2026-08-13** | `par.sh smoke --live`（M-2）PAR-SMOKE-PASS |
-| **remote 版本例行** | **完成 2026-08-13** | `par.sh version-check --remote`（M-3）全树 0.7.3；mac 不可达（No route to host） |
+| **维持脚本** | **完成** | **0.6.10** `par gate` · `par nightly` |
+| **nightly cron 挂载** | **完成 2026-08-13** | `par nightly install`（03:15 本地，首跑 PAR-NIGHTLY-PASS） |
+| **值守 live smoke** | **完成 2026-08-13** | `par smoke --live`（M-2）PAR-SMOKE-PASS |
+| **remote 版本例行** | **完成 2026-08-13** | `par version-check --remote`（M-3）全树 0.7.3；mac 不可达（No route to host） |
 
-### 四原语档位
+### 五原语档位
 
 | 原语 | 档 | 依据 | 仍开缺口 |
 |---|---|---|---|
@@ -57,9 +57,9 @@
 
 - [x] 文档正本一条命令链（`parallel.md`）  
 - [x] `par_result` 同源（含 discuss 0.6.6）  
-- [x] stub：`parallel/scripts/tests/run-all.sh` ALL PASS  
+- [x] stub：`scripts/tests/run-all.sh` ALL PASS  
 - [x] 本机 live 冒烟：discuss fire→take rc3→collect；review 双轨 done  
-- [x] 失败三行：§5 · `par.sh help`
+- [x] 失败三行：§5 · `par help`
 
 ### L2（0.6.8）
 
@@ -68,15 +68,15 @@
 | L2-1 | discuss 无 token 补问 1 次 | [x] |
 | L2-2 | attempt 串台 + 重复 take | [x] |
 | L2-3 | review/research artifact grace | [x] |
-| L2-4 | `par.sh help` 短卡 | [x] |
+| L2-4 | `par help` 短卡 | [x] |
 | L2-5 | layout-heal 修台链 | [x] |
 
 ### L3（0.6.9）
 
 | ID | 项 | 入口 | 状态 |
 |---|---|---|---|
-| L3-1 | 多端版本/指纹 | `par.sh version-check [--remote]` | [x] |
-| L3-2 | smoke stub + 可选 live | `par.sh smoke [--live]` | [x] |
+| L3-1 | 多端版本/指纹 | `par version-check [--remote]` | [x] |
+| L3-2 | smoke stub + 可选 live | `par smoke [--live]` | [x] |
 | L3-3 | discuss take 归档 | `discuss-*/archive/<attempt>-<ts>.md` | [x] |
 | L3-4 | 装机只读 | `install.sh --check` · `--dry-run` | [x] |
 
@@ -84,9 +84,9 @@
 
 | ID | 项 | 入口 | 状态 |
 |---|---|---|---|
-| M-4 | 合并前门禁 | `par.sh gate`（`--quick` / 默认 / `--full`） | [x] **脚本齐**；合并前跑 |
-| M-1 | nightly 脚本 + 日志 | `par.sh nightly run\|status` · 日志 `~/.local/state/workspace-par/nightly/` | [x] **脚本齐** |
-| M-1b | **nightly cron 挂载** | `par.sh nightly install`（默认 03:15） | [x] **2026-08-13 已挂**（首跑 PASS） |
+| M-4 | 合并前门禁 | `par gate`（`--quick` / 默认 / `--full`） | [x] **脚本齐**；合并前跑 |
+| M-1 | nightly 脚本 + 日志 | `par nightly run\|status` · 日志 `~/.local/state/workspace-par/nightly/` | [x] **脚本齐** |
+| M-1b | **nightly cron 挂载** | `par nightly install`（默认 03:15） | [x] **2026-08-13 已挂**（首跑 PASS） |
 
 ---
 
@@ -116,7 +116,7 @@
 合并前：
 
 ```bash
-bash skills/workspace/scripts/par.sh gate
+par gate
 ```
 
 ---
@@ -144,8 +144,8 @@ bash skills/workspace/scripts/par.sh gate
 ## 8. 一句话定案（今日收工）
 
 1. **生产级：已到**（L2 @ 0.6.8；L3 门禁 @ 0.6.9；gate/nightly 工具 @ 0.6.10）。  
-2. **nightly cron 已挂**（2026-08-13，03:15 本地）：例行 `par.sh nightly status` 看 last=PASS/FAIL。  
-3. **合并前习惯**：`par.sh gate`（M-4 脚本已齐）。  
+2. **nightly cron 已挂**（2026-08-13，03:15 本地）：例行 `par nightly status` 看 last=PASS/FAIL。  
+3. **合并前习惯**：`par gate`（M-4 脚本已齐）。  
 4. **其余**（P/O）进 §9，无 deadline。
 
 ---
@@ -158,19 +158,19 @@ bash skills/workspace/scripts/par.sh gate
 
 | ID | 项 | 怎么勾掉 | 状态 |
 |---|---|---|---|
-| **M-1b** | **nightly cron** | `par.sh nightly install`；次日 `status` 见 last=PASS/FAIL | [x] **2026-08-13** 已挂（03:15；首跑 PASS；次日复验 status） |
-| M-2 | 值守 live smoke | 有会话：`par.sh smoke --live` 跑通一轮 | [x] **2026-08-13** PAR-SMOKE-PASS（discuss 双席 token 轮 OK） |
-| M-3 | remote 版本例行 | 刷 skill 后 `par.sh version-check --remote` 无意外 DRIFT | [x] **2026-08-13** 本机 5 树 + lan-home-linux 2 树全 0.7.3；mac 不可达属主机离线（center host-check 域） |
-| M-4 | 合并前 gate | 习惯：改并行相关必 `par.sh gate` | [x] 工具齐；习惯自持 |
+| **M-1b** | **nightly cron** | `par nightly install`；次日 `status` 见 last=PASS/FAIL | [x] **2026-08-13** 已挂（03:15；首跑 PASS；次日复验 status） |
+| M-2 | 值守 live smoke | 有会话：`par smoke --live` 跑通一轮 | [x] **2026-08-13** PAR-SMOKE-PASS（discuss 双席 token 轮 OK） |
+| M-3 | remote 版本例行 | 刷 skill 后 `par version-check --remote` 无意外 DRIFT | [x] **2026-08-13** 本机 5 树 + lan-home-linux 2 树全 0.7.3；mac 不可达属主机离线（center host-check 域） |
+| M-4 | 合并前 gate | 习惯：改并行相关必 `par gate` | [x] 工具齐；习惯自持 |
 
 手工/立即等价（不装 cron 时）：
 
 ```bash
-par.sh nightly run          # 等价一次 stub smoke + 落盘
-par.sh nightly status
+par nightly run          # 等价一次 stub smoke + 落盘
+par nightly status
 # 真正挂载（待做）:
-par.sh nightly install      # 默认 15 3 * * * 本地
-par.sh nightly uninstall    # 卸
+par nightly install      # 默认 15 3 * * * 本地
+par nightly uninstall    # 卸
 ```
 
 ### 9.2 原语增强（按需）
@@ -203,7 +203,7 @@ par.sh nightly uninstall    # 卸
 | 阶段 A L1 | 完成 |
 | 阶段 B L2（0.6.8） | 完成 |
 | 阶段 C L3 门禁（0.6.9） | 完成 |
-| M-4 `par.sh gate`（0.6.10） | 完成 · 全量 `PAR-GATE-PASS` 已验 |
+| M-4 `par gate`（0.6.10） | 完成 · 全量 `PAR-GATE-PASS` 已验 |
 | M-1 nightly **脚本**（0.6.10） | 完成 |
 | M-1b nightly **cron** | **完成 2026-08-13**（03:15 已挂，首跑 PASS） |
 | 工作台清理 | 完成（discuss 关 · layout-heal · 三 space 各 1 主席） |
