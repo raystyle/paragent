@@ -3,7 +3,7 @@
 ## 项目概览
 
 独立 CLI 项目（`bin/par`）+ 附带薄 skill（`skills/par/SKILL.md`）。
-herdr 并行 agent 编排：五原语 dev/research/review/ix/triad。形态 = CLI 主、skill 仅路由。
+herdr 并行 agent 编排：五原语 develop/research/review/discuss/triad。形态 = CLI 主、skill 仅路由。
 仓内零密钥材料。
 
 ## 安装

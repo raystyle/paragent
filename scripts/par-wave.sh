@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # par-wave.sh — 渐进式批量派发(事件驱动启动)
-# 用法: par-wave.sh --mode dev|research|review [--timeout-min N] [--layout tab|stack] \
+# 用法: par-wave.sh --mode develop|research|review [--timeout-min N] [--layout tab|stack] \
 #          <tid>=<model-cmd|@matrix/track> ...
 #   布局默认: 一律 tab（每任务一 tab；agent 不开右侧窗格）。可用 --layout stack 覆盖。
-#   dev=worktree；research/review=只读无 worktree
+#   develop=worktree；research/review=只读无 worktree
 #   启动串行: par-run --launch-only 回执后才下一个; 启动后并发 par_finish 收割。
 #   rc0=全 done; 否则 rc2
 set -uo pipefail
@@ -19,8 +19,8 @@ while [ $# -gt 0 ]; do
     *)  break ;;
   esac
 done
-[ "$MODE" = dev ] || [ "$MODE" = research ] || [ "$MODE" = review ] \
-  || { err "need --mode dev|research|review"; exit 1; }
+[ "$MODE" = develop ] || [ "$MODE" = research ] || [ "$MODE" = review ] \
+  || { err "need --mode develop|research|review"; exit 1; }
 [[ "$TMO_MIN" =~ ^[0-9]+$ ]] || { err "--timeout-min 须为正整数"; exit 1; }
 [ $# -ge 1 ] || { err "need <tid>=<model-cmd|@matrix/track>..."; exit 1; }
 LAYOUT=${LAYOUT:-tab}

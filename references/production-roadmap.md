@@ -20,7 +20,7 @@
 
 1. 完成真源 = `tokens.par_result` 锚定 `<tid>#<attempt>` + 非空结论（**禁**仅靠 `agent_status` / 扫终端）。  
 2. 入口唯一：`scripts/par.sh`；`parallel/` 无独立 skill。  
-3. 布局：wave/run 默认 tab；ix 仅 stack 右双席且只 `ix close`。  
+3. 布局：wave/run 默认 tab；discuss 仅 stack 右双席且只 `discuss close`。  
 4. 错误靠脚本退出码 + 标记文件，不靠「记得要 report」。
 
 ---
@@ -41,10 +41,10 @@
 
 | 原语 | 档 | 依据 | 仍开缺口 |
 |---|---|---|---|
-| **dev** | **L2** | worktree + token + artifact + verify/merge；wave 测 | merge 人环（刻意）；live 非常态化 |
+| **develop** | **L2** | worktree + token + artifact + verify/merge；wave 测 | merge 人环（刻意）；live 非常态化 |
 | **research** | **L2** | 只读 + token + artifact；wave 测 | explorer 契约靠预写 task |
 | **review** | **L2** | 一等 `--mode review`；双轨测 + live 双轨 done | P0/P1 模板靠约定；nightly live 未挂 |
-| **ix** | **L3−** | par_result · 补问 · 串台/重复 take · archive · smoke | cron 未挂；archive 检索未做 |
+| **discuss** | **L3−** | par_result · 补问 · 串台/重复 take · archive · smoke | cron 未挂；archive 检索未做 |
 | **triad**（0.7.0） | **L1+** | 三席 chief+a/b · 协议尾正本（triad-mode.md）· stub 绿（test-triad）· token 锚 `triad-<role>#<首席attempt>` · **live 冒烟过**（fire→双席报 token→回注 chief→take 3/3 归档）· **闸门代码兜底**（0.7.3 relay rc4/5/6/7，P-5） | 席位守协议率未量化 |
 
 **总判：可标生产级（L2）；L3 代码门禁齐；完整生产「在维持」差 cron/习惯挂载。**
@@ -56,16 +56,16 @@
 ### L1
 
 - [x] 文档正本一条命令链（`parallel.md`）  
-- [x] `par_result` 同源（含 ix 0.6.6）  
+- [x] `par_result` 同源（含 discuss 0.6.6）  
 - [x] stub：`parallel/scripts/tests/run-all.sh` ALL PASS  
-- [x] 本机 live 冒烟：ix fire→take rc3→collect；review 双轨 done  
+- [x] 本机 live 冒烟：discuss fire→take rc3→collect；review 双轨 done  
 - [x] 失败三行：§5 · `par.sh help`
 
 ### L2（0.6.8）
 
 | ID | 项 | 状态 |
 |---|---|---|
-| L2-1 | ix 无 token 补问 1 次 | [x] |
+| L2-1 | discuss 无 token 补问 1 次 | [x] |
 | L2-2 | attempt 串台 + 重复 take | [x] |
 | L2-3 | review/research artifact grace | [x] |
 | L2-4 | `par.sh help` 短卡 | [x] |
@@ -77,7 +77,7 @@
 |---|---|---|---|
 | L3-1 | 多端版本/指纹 | `par.sh version-check [--remote]` | [x] |
 | L3-2 | smoke stub + 可选 live | `par.sh smoke [--live]` | [x] |
-| L3-3 | ix take 归档 | `ix-*/archive/<attempt>-<ts>.md` | [x] |
+| L3-3 | discuss take 归档 | `discuss-*/archive/<attempt>-<ts>.md` | [x] |
 | L3-4 | 装机只读 | `install.sh --check` · `--dry-run` | [x] |
 
 ### 维持入口（0.6.10）
@@ -106,12 +106,12 @@
 ## 5. 主控运维三行（失败时）
 
 ```text
-1) cat .parallel/<tid>|ix-*/state 与 round（ix）
+1) cat .parallel/<tid>|discuss-*/state 与 round（discuss）
 2) herdr pane get <pane> | jq .result.pane.tokens.par_result
 3) 退出码：take rc3=无本轮 token；wait 非0=停了但没 report-metadata
 ```
 
-补救：同议题再 `ix fire`（新 attempt）或子席执行文末 report 指令。
+补救：同议题再 `discuss fire`（新 attempt）或子席执行文末 report 指令。
 
 合并前：
 
@@ -123,7 +123,7 @@ bash skills/workspace/scripts/par.sh gate
 
 ## 6. 非目标（明确不做）
 
-- 不把 ix 改成第三种 wave mode。  
+- 不把 discuss 改成第三种 wave mode。  
 - 不引入默认布局 hook。  
 - 不在本 skill 签发 mesh/SSH（center）。  
 - 不为「绝对完整」无限扩家目录白名单。  
@@ -159,7 +159,7 @@ bash skills/workspace/scripts/par.sh gate
 | ID | 项 | 怎么勾掉 | 状态 |
 |---|---|---|---|
 | **M-1b** | **nightly cron** | `par.sh nightly install`；次日 `status` 见 last=PASS/FAIL | [x] **2026-08-13** 已挂（03:15；首跑 PASS；次日复验 status） |
-| M-2 | 值守 live smoke | 有会话：`par.sh smoke --live` 跑通一轮 | [x] **2026-08-13** PAR-SMOKE-PASS（ix 双席 token 轮 OK） |
+| M-2 | 值守 live smoke | 有会话：`par.sh smoke --live` 跑通一轮 | [x] **2026-08-13** PAR-SMOKE-PASS（discuss 双席 token 轮 OK） |
 | M-3 | remote 版本例行 | 刷 skill 后 `par.sh version-check --remote` 无意外 DRIFT | [x] **2026-08-13** 本机 5 树 + lan-home-linux 2 树全 0.7.3；mac 不可达属主机离线（center host-check 域） |
 | M-4 | 合并前 gate | 习惯：改并行相关必 `par.sh gate` | [x] 工具齐；习惯自持 |
 
@@ -179,7 +179,7 @@ par.sh nightly uninstall    # 卸
 |---|---|---|
 | P-1 | review P0/P1 模板写死 | [x] **0.7.4**（2026-08-13）：骨架预写 artifact.md + par_delivery_met review 结构 lint 硬门禁 |
 | P-2 | research explorer 可校验清单 | [x] **0.7.5**（2026-08-13）：骨架预写 + par_delivery_met research 三节 lint（结论/证据/存疑） |
-| P-3 | ix archive list/汇总 | [x] **0.7.6**（2026-08-13）：`ix archive [--json]` 清单/汇总（rc3=无归档） |
+| P-3 | discuss archive list/汇总 | [x] **0.7.6**（2026-08-13）：`discuss archive [--json]` 清单/汇总（rc3=无归档） |
 | P-4 | merge checklist 三行（不自动化合并） | [x] **0.7.7**（2026-08-14）：par-merge 逐任务打印 state/verify/diffstat 三行 |
 | P-5 | triad 闸门代码兜底（live 双席共识：状态闸门/回话上限/主窗隔离仅提示词层；候选=fire 时脚本侧写 per-seat replied 标记、take 前脚本验目标态） | [x] **0.7.3**（2026-08-13）：relay 子命令代码闸（rc4/5/6/7）+ fire 重置 replied 标记；take 验态经评估**否定**（席位报 token 后进 peer 阶段仍 working，锚定收割本就安全）并固化回归用例 take-peer-phase-working-ok |
 
@@ -192,7 +192,7 @@ par.sh nightly uninstall    # 卸
 
 ### 9.4 延后
 
-- 远端 CI 机器人 · 家目录白名单扩面 · ix 并 wave — 见 §6。
+- 远端 CI 机器人 · 家目录白名单扩面 · discuss 并 wave — 见 §6。
 
 ---
 
@@ -206,7 +206,7 @@ par.sh nightly uninstall    # 卸
 | M-4 `par.sh gate`（0.6.10） | 完成 · 全量 `PAR-GATE-PASS` 已验 |
 | M-1 nightly **脚本**（0.6.10） | 完成 |
 | M-1b nightly **cron** | **完成 2026-08-13**（03:15 已挂，首跑 PASS） |
-| 工作台清理 | 完成（ix 关 · layout-heal · 三 space 各 1 主席） |
+| 工作台清理 | 完成（discuss 关 · layout-heal · 三 space 各 1 主席） |
 | 路线图终版 | **本文** |
 
 **维持已挂载（2026-08-13）**：nightly cron 03:15 · M-2 live smoke PASS · M-3 全树 0.7.3。

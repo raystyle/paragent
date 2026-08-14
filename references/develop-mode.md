@@ -1,13 +1,13 @@
-# dev-mode — 并行分支/开叉细则
+# develop-mode — 并行分支/开叉细则
 
-> 用法正本：`../../references/parallel.md`（四原语卡）。本文件 = dev 细则。
+> 用法正本：`../../references/parallel.md`（四原语卡）。本文件 = develop 细则。
 
 ## 流程(主 agent 逐步)
 
 ```bash
 # 0. 规划:grill 拆好,写 .parallel/plan.md + 预写各 .parallel/<tid>/task.md
 # 1. 渐进批量派发(一条后台命令;事件驱动:一个 agent 回执 working 才启动下一个,避免并发 recruit 撞 herdr 锁):
-bash skills/workspace/scripts/par.sh wave --mode dev t-foo=@dev/a t-bar=@dev/b t-bar2=@dev/c
+bash skills/workspace/scripts/par.sh wave --mode develop t-foo=@develop/a t-bar=@develop/b t-bar2=@develop/c
 #    (单任务才用 par-run.sh;--launch-only 只启动不收割,供 par-wave 调用)
 # 2. 各任务回调 done 后逐个 verify:
 bash skills/workspace/scripts/par.sh verify t-foo --cmd "cargo test foo"
@@ -22,7 +22,7 @@ bash skills/workspace/scripts/par.sh merge t-foo t-bar
 | failed | 派发期失败(worktree/recruit/dispatch) | 看 stderr 原因,修环境后同 tid 重派 |
 | stalled | 虚报/空转(交付信号缺) | 读 `.parallel/<tid>/` 交付物,`herdr agent prompt <pane>` 补发或升档重派(同 tid 幂等) |
 | blocked | agent 上报 PAR-BLOCKED(token+终端) | 上浮报人 |
-| verify-failed | retry 耗尽 | 升档重派:`par-run.sh <tid> "<更强 model>" --mode dev --attempt N+1` |
+| verify-failed | retry 耗尽 | 升档重派:`par-run.sh <tid> "<更强 model>" --mode develop --attempt N+1` |
 | timeout | 墙钟耗尽 | 查 pane 实况,补发或重派 |
 
 ## merge 规程

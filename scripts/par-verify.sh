@@ -23,7 +23,7 @@ done
 
 TD="$PWD/.parallel/$TID"
 PANE=$(cat "$TD/pane" 2>/dev/null) || { err "$TD/pane 缺失(先 par-run)"; exit 2; }
-[ -d "$TD/wt" ] || { err "$TD/wt 缺失(非 dev 任务?)"; exit 2; }
+[ -d "$TD/wt" ] || { err "$TD/wt 缺失(非 develop 任务?)"; exit 2; }
 ATTEMPT=$(sed -n 's/^attempt=//p' "$TD/meta" 2>/dev/null); ATTEMPT=${ATTEMPT:-1}
 LOG="$TD/verify.log"; : > "$LOG"
 

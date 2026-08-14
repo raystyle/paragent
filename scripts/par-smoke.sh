@@ -3,13 +3,13 @@
 #
 # 用法:
 #   par-smoke.sh                 # stub 全量 run-all + version-check（默认 CI）
-#   par-smoke.sh --live          # + 本机 live：ix 双席 token 轮（需 herdr 会话与右席）
+#   par-smoke.sh --live          # + 本机 live：discuss 双席 token 轮（需 herdr 会话与右席）
 #   PAR_SMOKE_LIVE=1 par-smoke.sh
 #
 # 判定: PAR-SMOKE-PASS / PAR-SMOKE-FAIL
 # nightly 建议: cron 跑默认（stub）；有人值守再 --live
 # 日志落盘（O-2）：$PAR_SMOKE_DIR（默认 ~/.local/state/paragent/smoke/）每次 <ts>.log + last.log，
-# stage 输出 {ver,ix-open,ix-col}.out（last-run）；失败附排查三行（O-1）
+# stage 输出 {ver,discuss-open,discuss-col}.out（last-run）；失败附排查三行（O-1）
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL="$(cd "$HERE/.." && pwd)"
@@ -36,7 +36,7 @@ mkdir -p "$SMOKE_DIR"
 TS=$(date +%Y%m%d-%H%M%S)
 LOG="$SMOKE_DIR/$TS.log"
 OUT_VER="$SMOKE_DIR/ver.out"
-OUT_IXOPEN="$SMOKE_DIR/ix-open.out"; OUT_IXCOL="$SMOKE_DIR/ix-col.out"
+OUT_DISCUSS_OPEN="$SMOKE_DIR/discuss-open.out"; OUT_DISCUSS_COL="$SMOKE_DIR/discuss-col.out"
 
 main() {
 log "== 1) parallel run-all (stub) =="
@@ -56,26 +56,26 @@ fi
 
 PAR_BIN="${PAR_BIN:-$SKILL/bin/par}"
 if [ "$LIVE" = 1 ]; then
-  log "== 3) live ix token 轮（需已 open 的 ix 或可 open）=="
+  log "== 3) live discuss token 轮（需已 open 的 discuss 或可 open）=="
   if ! command -v herdr >/dev/null 2>&1; then
     bad "herdr 不在 PATH"
   else
     # 尝试 open（已有则 reuse）
-    bash "$PAR_BIN" ix open --a @review/a --b @review/b >"$OUT_IXOPEN" 2>&1 \
-      || log "ix open 非零（可能已有 session）: $(tail -3 "$OUT_IXOPEN")"
-    bash "$PAR_BIN" ix fire a "【smoke】一句话回 pong-a，并执行文末 report-metadata。" >/dev/null 2>&1 || bad "ix fire a"
-    bash "$PAR_BIN" ix fire b "【smoke】一句话回 pong-b，并执行文末 report-metadata。" >/dev/null 2>&1 || bad "ix fire b"
+    bash "$PAR_BIN" discuss open --a @review/a --b @review/b >"$OUT_DISCUSS_OPEN" 2>&1 \
+      || log "discuss open 非零（可能已有 session）: $(tail -3 "$OUT_DISCUSS_OPEN")"
+    bash "$PAR_BIN" discuss fire a "【smoke】一句话回 pong-a，并执行文末 report-metadata。" >/dev/null 2>&1 || bad "discuss fire a"
+    bash "$PAR_BIN" discuss fire b "【smoke】一句话回 pong-b，并执行文末 report-metadata。" >/dev/null 2>&1 || bad "discuss fire b"
     # 立即 take 应 rc3
-    bash "$PAR_BIN" ix take --all >/dev/null 2>&1
+    bash "$PAR_BIN" discuss take --all >/dev/null 2>&1
     trc=$?
     [ "$trc" -eq 3 ] && log "live immediate take rc3 OK" || bad "live immediate take 期望 rc3 got $trc"
-    if bash "$PAR_BIN" ix collect --all --no-read --timeout-ms 180000 >"$OUT_IXCOL" 2>&1; then
-      grep -q 'par_result: PAR-DONE' "$OUT_IXCOL" \
+    if bash "$PAR_BIN" discuss collect --all --no-read --timeout-ms 180000 >"$OUT_DISCUSS_COL" 2>&1; then
+      grep -q 'par_result: PAR-DONE' "$OUT_DISCUSS_COL" \
         && log "live collect par_result OK" \
         || bad "live collect 无 par_result 行"
     else
       bad "live collect 失败（子席可能未 report-metadata）"
-      tail -15 "$OUT_IXCOL" >&2
+      tail -15 "$OUT_DISCUSS_COL" >&2
     fi
   fi
 else
@@ -90,7 +90,7 @@ fi
 echo "PAR-SMOKE-FAIL"
 # O-1：live 踩失败三行文案（定位路径 + live 高发因 + 单跑定位）
 echo "  排查三行:"
-echo "  1) 全量日志 $LOG；stage 输出同目录 {ver,ix-open,ix-col}.out（last-run）"
+echo "  1) 全量日志 $LOG；stage 输出同目录 {ver,discuss-open,discuss-col}.out（last-run）"
 echo "  2) live 高发：子席未报 token → herdr pane get <pane> 看 tokens.par_result；席忙先 herdr agent wait <pane> --until idle --until done"
 echo "  3) stub 红：bash scripts/tests/run-all.sh 单跑定位（paragent 仓根下）"
 return 1

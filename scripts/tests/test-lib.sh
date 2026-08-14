@@ -17,7 +17,7 @@ OUT=$(PATH="$STUB_DIR2:$PATH" par_ws) && fail "ws-empty 应 rc!=0" || pass "ws-e
 [ -z "$OUT" ] && pass "ws-empty-stdout" || fail "ws-empty stdout非空: $OUT"
 
 # par_matrix_resolve
-[ "$(par_matrix_resolve '@dev/a')" = "kimi -m kimi-code/k3" ] && pass "matrix-dev-a" || fail "dev/a"
+[ "$(par_matrix_resolve '@develop/a')" = "kimi -m kimi-code/k3" ] && pass "matrix-develop-a" || fail "develop/a"
 [ "$(par_matrix_resolve research/c)" = "codex -m deepseek-v4-pro-cx" ] && pass "matrix-res-c" || fail "res/c"
 [ "$(par_matrix_resolve '@review/a')" = "claude --model claude-opus-4-8-cc[1m]" ] && pass "matrix-review-a" || fail "review/a"
 [ "$(par_matrix_resolve '@review/b')" = "codex -m gpt-5.6-sol-cx" ] && pass "matrix-review-b" || fail "review/b"
@@ -91,6 +91,6 @@ printf '# research t1#1\n## 结论\nok\n## 证据\n无\n## 存疑\n无\n' > "$TD
 par_delivery_met "$TD3" 0 "" research && pass "delivery-research-full" || fail "research 三节齐应收"
 sed -i '/^## 存疑/d' "$TD3/artifact.md"
 par_delivery_met "$TD3" 0 "" research && fail "research 缺存疑应拒" || pass "delivery-research-missing-rejected"
-# dev 模式不受 lint
-par_delivery_met "$TD" 1 "$BASE" && pass "delivery-dev-no-lint" || fail "dev 不应 lint"
+# develop 模式不受 lint
+par_delivery_met "$TD" 1 "$BASE" && pass "delivery-develop-no-lint" || fail "develop 不应 lint"
 echo "PASS test-lib"

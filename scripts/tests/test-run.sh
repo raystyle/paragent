@@ -42,12 +42,12 @@ AFTER=$(grep -c "agent prompt" "$STUB_LOG")
 [ $((AFTER - BEFORE)) -eq 2 ] && pass "run-retry-一次质问" || fail "t9 prompt 增量 $((AFTER - BEFORE)) ≠ 2"
 unset PAR_GRACE_MAX; export STUB_AUTO=0; export STUB_ON_AGENT_WAIT_AUTO=""
 
-# dev 模式:建 worktree + 分支 par/t4;artifact+commit 齐 → done
+# develop 模式:建 worktree + 分支 par/t4;artifact+commit 齐 → done
 export STUB_ON_AGENT_WAIT='cd "'"$FIX"'/.parallel/t4/wt" && git -c user.name=t -c user.email=t@t commit -qm work --allow-empty && echo ok > "'"$FIX"'/.parallel/t4/artifact.md"'
-export STUB_TOKEN="PAR-DONE t4#1 dev完成"
-bash "$RUN" t4 "pi" --mode dev --brief x --timeout-min 1 \
-  && pass "run-dev-done" || fail "t4 rc=$?"
-[ -d .parallel/t4/wt ] && git branch --list "par/t4" | grep -q par/t4 && pass "run-dev-worktree" || fail "t4 worktree"
+export STUB_TOKEN="PAR-DONE t4#1 develop完成"
+bash "$RUN" t4 "pi" --mode develop --brief x --timeout-min 1 \
+  && pass "run-develop-done" || fail "t4 rc=$?"
+[ -d .parallel/t4/wt ] && git branch --list "par/t4" | grep -q par/t4 && pass "run-develop-worktree" || fail "t4 worktree"
 
 # task-id 非法值:大写/下划线均 rc1 拒绝(挡路径穿越与正则元字符)
 bash "$RUN" A1 "pi" --mode research --brief x >/dev/null 2>&1; [ $? -eq 1 ] && pass "run-tid-uppercase-rc1" || fail "tid A1 未拒绝"

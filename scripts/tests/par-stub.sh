@@ -86,7 +86,7 @@ case "$cmd $1" in
     if [[ "$*" == *"完成上报·必须"* ]] && [[ "$*" != *"补问"* ]]; then
       rm -f "$STUB_DIR/waitc-$2"
     fi
-    # 从消息提取 PAR-DONE tid#att 锚点（ix fire 会嵌入完成上报指令）
+    # 从消息提取 PAR-DONE tid#att 锚点（discuss fire 会嵌入完成上报指令）
     if [[ "$*" =~ PAR-DONE[[:space:]]+([A-Za-z0-9_-]+)#([0-9]+) ]]; then
       echo "${BASH_REMATCH[1]}#${BASH_REMATCH[2]}" > "$STUB_DIR/anchor-$2"
     fi
@@ -100,7 +100,7 @@ case "$cmd $1" in
     pane=$2
     [ "${STUB_WAIT_FAIL:-0}" = 1 ] && { sleep "${STUB_WAIT_SECS:-0}"; exit 1; }
     [ -n "${STUB_ON_AGENT_WAIT:-}" ] && eval "$STUB_ON_AGENT_WAIT"
-    # 写 par_result：STUB_AUTO=1（wave 交付测）或 STUB_WRITE_ANCHOR_TOKEN=1（ix 测）
+    # 写 par_result：STUB_AUTO=1（wave 交付测）或 STUB_WRITE_ANCHOR_TOKEN=1（discuss 测）
     # STUB_AUTO_NO_TOKEN=1：前 N 次 wait 不写（补问测）；HARD=始终不写
     anchor=$(cat "$STUB_DIR/anchor-$pane" 2>/dev/null || true)
     wc=$(( $(cat "$STUB_DIR/waitc-$pane" 2>/dev/null || echo 0) + 1 ))

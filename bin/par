@@ -33,16 +33,16 @@ par_home() {
 
 usage() {
   cat <<'EOF'
-par — herdr 并行 agent 编排（五原语：dev/research/review/ix/triad）
+par — herdr 并行 agent 编排（五原语：develop/research/review/discuss/triad）
 
 用法正本: references/parallel.md
 
-  wave     par wave --mode dev t1=@dev/a t2=@dev/b      # 并行分支/开叉（→ verify → 人确认 → merge）
+  wave     par wave --mode develop t1=@develop/a t2=@develop/b      # 并行分支/开叉（→ verify → 人确认 → merge）
            par wave --mode research t1=@research/a …    # 并行研究/分析（只读）
            par wave --mode review t1=@review/a t2=@review/b   # 双轨交叉审（预写 task.md）
-  run      par run <tid> @dev/a [--mode …] [--brief "…"]
-  ix       par ix open → ix fire a|b "…" → ix take|collect → ix close   # 并行合作/交流
-           par ix archive [--json]                      # 归档清单/汇总
+  run      par run <tid> @develop/a [--mode …] [--brief "…"]
+  discuss  par discuss open → discuss fire a|b "…" → discuss take|collect → discuss close
+           par discuss archive [--json]                      # 归档清单/汇总
   triad    par triad open [--mode …] → triad fire "题" → take|collect → triad close
            par-triad relay <席> "<回话>"                 # 席位互注闸控通道
   verify   par verify <tid> --cmd "<验证命令>"
@@ -84,7 +84,7 @@ case "$cmd" in
   verify) par_run par-verify.sh verify "$@" ;;
   merge)  par_run par-merge.sh merge "$@" ;;
   discard) par_run par-discard.sh discard "$@" ;;
-  ix)     par_run par-ix.sh ix "$@" ;;
+  discuss) par_run par-discuss.sh discuss "$@" ;;
   triad)  par_run par-triad.sh triad "$@" ;;
   relay)  par_run par-triad.sh relay relay "$@" ;;
   context|ctx|where) par_run context.sh context "$@" ;;
@@ -98,7 +98,7 @@ case "$cmd" in
     # shellcheck disable=SC1091
     . "$home/scripts/par-lib.sh"
     export PAR_CLOSE_PANE=1
-    # 排除 ix/triad 席（mode=ix/triad）；交互席仅 par ix|triad close
+    # 排除 discuss/triad 席（mode=discuss/triad）；交互席仅 par discuss|triad close
     par_close_all_task_panes "${1:-$PWD}"
     echo "PAR-ROUTE-PASS（close-tasks）"
     ;;

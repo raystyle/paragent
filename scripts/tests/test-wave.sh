@@ -42,16 +42,16 @@ P2=$(l "agent prompt.*\.parallel/w2/task")
 # meta 记录矩阵解析
 grep -q 'cmd=grok -m grok-4.5' .parallel/w1/meta && pass "wave-meta-matrix" || fail "w1 meta cmd=$(cat .parallel/w1/meta)"
 
-# ── par-wave dev: 默认 tab + worktree 交付需新 commit ──
+# ── par-wave develop: 默认 tab + worktree 交付需新 commit ──
 : > "$STUB_LOG"
 export STUB_ON_AGENT_WAIT_AUTO='
   echo x > "'"$FIX"'/.parallel/$TID/artifact.md"
   git -C "'"$FIX"'/.parallel/$TID/wt" -c user.name=t -c user.email=t@t commit -qm work --allow-empty 2>/dev/null || true
 '
-bash "$WAVE" --mode dev --timeout-min 1 d1="@dev/a" \
-  && pass "wave-dev-rc" || fail "wave-dev rc=$?"
-grep -q "tab create" "$STUB_LOG" && pass "wave-dev-tab" || fail "dev 应 tab create"
-[ "$(cat .parallel/d1/state)" = done ] && pass "wave-dev-done" || fail "d1 state=$(cat .parallel/d1/state 2>/dev/null)"
+bash "$WAVE" --mode develop --timeout-min 1 d1="@develop/a" \
+  && pass "wave-develop-rc" || fail "wave-develop rc=$?"
+grep -q "tab create" "$STUB_LOG" && pass "wave-develop-tab" || fail "develop 应 tab create"
+[ "$(cat .parallel/d1/state)" = done ] && pass "wave-develop-done" || fail "d1 state=$(cat .parallel/d1/state 2>/dev/null)"
 
 # 坏 tid
 bash "$WAVE" --mode research Bad_Tid=pi 2>/dev/null; [ $? -eq 1 ] && pass "wave-bad-tid-rc1" || fail "坏 tid 应 rc1"
@@ -82,5 +82,6 @@ bash "$WAVE" --mode research --timeout-min 1 old=@review/a >/tmp/wave-old.out 2>
   && pass "wave-old-review-track-rc" || fail "旧 research+@review 应可用 out=$(cat /tmp/wave-old.out)"
 [ ! -d .parallel/old/wt ] && pass "wave-old-review-no-wt" || fail "旧写法也不应 worktree"
 bash "$WAVE" --mode nope t1=@review/a 2>/dev/null; [ $? -eq 1 ] && pass "wave-bad-mode-rc1" || fail "坏 mode 应 rc1"
+bash "$WAVE" --mode dev t1=@develop/a 2>/dev/null; [ $? -eq 1 ] && pass "wave-old-mode-rc1" || fail "旧缩写 mode 应 rc1"
 
 echo "PASS test-wave"

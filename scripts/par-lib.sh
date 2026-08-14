@@ -30,7 +30,7 @@ par_status_urgency() {
 }
 
 # 矩阵档案：local=主控满矩阵；remote=远程 CPA 子集（见 matrix-remote.json / models.md）
-# 覆盖：PAR_MATRIX_PROFILE=local|remote · 或轨前缀 @remote/dev/a · PAR_MATRIX_JSON 强制表路径
+# 覆盖：PAR_MATRIX_PROFILE=local|remote · 或轨前缀 @remote/develop/a · PAR_MATRIX_JSON 强制表路径
 PAR_MATRIX_PROFILE="${PAR_MATRIX_PROFILE:-local}"
 PAR_MATRIX_JSON_LOCAL="${PAR_MATRIX_JSON_LOCAL:-$PAR_SKILL_DIR/references/matrix.json}"
 PAR_MATRIX_JSON_REMOTE="${PAR_MATRIX_JSON_REMOTE:-$PAR_SKILL_DIR/references/matrix-remote.json}"
@@ -159,7 +159,7 @@ par_seed_trust() {
 
 # ── 模型矩阵解析（matrix.json / matrix-remote.json；case 兜底）──
 # 输入: 裸 model-cmd 或 @matrix/track（可省略 @）
-#   档案 local（默认）: speed 双轨 · dev/research 三轨 · review 双轨
+#   档案 local（默认）: speed 双轨 · develop/research 三轨 · review 双轨
 #   档案 remote: 极速=flash@codex · 开发=glm@claude · 研究=pro@codex · 审阅同 local
 #   前缀: @remote/… 强制 remote 表；@local/… 强制 local 表
 # 输出: 单行 model-cmd；未知轨 fail（不静默回落）
@@ -169,7 +169,7 @@ par_matrix_resolve() {
   # 裸命令透传
   case "$spec" in
     @*) key=${spec#@} ;;
-    speed/*|fast/*|dev/*|review/*|research/*|local/*|remote/*) key=$spec ;;
+    speed/*|fast/*|develop/*|review/*|research/*|local/*|remote/*) key=$spec ;;
     *) printf '%s' "$spec"; return 0 ;;
   esac
   key=$(printf '%s' "$key" | tr 'A-Z' 'a-z')
@@ -202,7 +202,7 @@ par_matrix_resolve() {
     case "$key" in
       speed/*|fast/*)
         echo 'codex -m deepseek-v4-flash-cx' ;;
-      dev/*)
+      develop/*)
         echo 'claude --model glm-5.2-cc[1m]' ;;
       research/*)
         echo 'codex -m deepseek-v4-pro-cx' ;;
@@ -211,7 +211,7 @@ par_matrix_resolve() {
       review/b|review/gpt)
         echo 'codex -m gpt-5.6-sol-cx' ;;
       *)
-        err "未知远程矩阵轨: $spec（remote 仅 speed→flash · dev→glm · research→pro · review 双轨）"
+        err "未知远程矩阵轨: $spec（remote 仅 speed→flash · develop→glm · research→pro · review 双轨）"
         return 1 ;;
     esac
     return 0
@@ -221,11 +221,11 @@ par_matrix_resolve() {
       echo 'pi --model kimi/kimi-for-coding-highspeed-pi' ;;
     speed/b|speed/flash|fast/b|fast/flash)
       echo 'codex -m deepseek-v4-flash-cx' ;;
-    dev/a|dev/k3)
+    develop/a|develop/k3)
       echo 'kimi -m kimi-code/k3' ;;
-    dev/b|dev/grok)
+    develop/b|develop/grok)
       echo 'grok -m grok-4.5' ;;
-    dev/c|dev/glm)
+    develop/c|develop/glm)
       echo 'claude --model glm-5.2-cc[1m]' ;;
     review/a|review/opus)
       echo 'claude --model claude-opus-4-8-cc[1m]' ;;
@@ -267,7 +267,7 @@ else:
 }
 
 # par_open_pane <label> <cwd> <layout:tab|stack> [ws] → stdout pane_id
-# tab:   新 tab 根窗格（默认；dev/research/审阅一律）
+# tab:   新 tab 根窗格（默认；develop/research/审阅一律）
 # stack: 当前 tab 右侧叠开（flock 串行 split；仅显式 --layout stack）
 par_open_pane() {
   local label=$1 cwd=$2 layout=${3:-tab} ws=${4:-} pane
@@ -414,7 +414,7 @@ par_close_task_pane() {
 }
 
 # 关本仓 .parallel/*/pane 列出的任务窗（不清主栏）
-# 跳过 mode=ix / 目录 ix-*：并行交互席只允许 par.sh ix close 显式关
+# 跳过 mode=discuss / 目录 discuss-*：并行交互席只允许 par.sh discuss close 显式关
 par_close_all_task_panes() {
   local root td pane layout mode base
   root="${1:-$PWD}"
@@ -422,10 +422,10 @@ par_close_all_task_panes() {
     [ -d "$td" ] || continue
     base=$(basename "$td")
     case "$base" in
-      ix|ix-*) continue ;;  # .parallel/ix/ · ix-claude · ix-codex
+      discuss|discuss-*) continue ;;  # .parallel/discuss/ · discuss-claude · discuss-codex
     esac
     mode=$(sed -n 's/^mode=//p' "${td}meta" 2>/dev/null | head -1)
-    [ "$mode" = ix ] && continue
+    [ "$mode" = discuss ] && continue
     pane=$(cat "${td}pane" 2>/dev/null || true)
     layout=$(sed -n 's/^layout=//p' "${td}meta" 2>/dev/null | head -1)
     layout=${layout:-tab}
@@ -590,7 +590,7 @@ par_finish() {
   mode=$(sed -n 's/^mode=//p' "$td/meta" 2>/dev/null); mode=${mode:-research}
   attempt=$(sed -n 's/^attempt=//p' "$td/meta" 2>/dev/null); attempt=${attempt:-1}
   base=$(sed -n 's/^base=//p' "$td/meta" 2>/dev/null)
-  need=0; [ "$mode" = dev ] && need=1
+  need=0; [ "$mode" = develop ] && need=1
   # 无基线时补写（兼容旧 launch）
   [ -f "$td/artifact.baseline" ] || par_artifact_baseline_write "$td"
 

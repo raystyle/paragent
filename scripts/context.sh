@@ -265,7 +265,7 @@ if [ "$JSON" = 1 ]; then
         blocked: $blocked_cmd
       } end),
       entries: {
-        par: "par wave|run|ix|triad|context|close-tasks|verify|merge|discard|gate|smoke|nightly",
+        par: "par wave|run|discuss|triad|context|close-tasks|verify|merge|discard|gate|smoke|nightly",
         agent: "agent.sh ensure|check|test|context|harness",
         pane: "pane.sh dir|file|code|run|close|…"
       },

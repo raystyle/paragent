@@ -20,16 +20,16 @@
 # 远程会话整波
 export PAR_MATRIX_PROFILE=remote
 par.sh wave --mode research t1=@research/a          # → deepseek-pro@codex
-par.sh wave --mode dev      t1=@dev/a               # → glm-5.2@claude
+par.sh wave --mode develop      t1=@develop/a               # → glm-5.2@claude
 par.sh run  t-fast @speed/a --mode research         # → flash@codex
 
 # 或单次前缀（不改 env）
-par.sh run t1 @remote/dev/a --mode dev
+par.sh run t1 @remote/develop/a --mode develop
 par.sh run t2 @remote/review/b                      # 审阅 B 仍 gpt
 ```
 
-- 远程表：`parallel/references/matrix-remote.json`（`@speed/*` `@dev/*` `@research/*` 别名均收敛到上表唯一轨）。  
-- **主控**仍用默认 local 满矩阵（下节）；远程不要派 `@dev/a` 期望 k3——remote 下 a/b/c 都是 glm。  
+- 远程表：`parallel/references/matrix-remote.json`（`@speed/*` `@develop/*` `@research/*` 别名均收敛到上表唯一轨）。  
+- **主控**仍用默认 local 满矩阵（下节）；远程不要派 `@develop/a` 期望 k3——remote 下 a/b/c 都是 glm。  
 - 远程 agent 就绪：`agent.sh ensure <host>` 装 claude+codex（+pi 可选）；**不要求** kimi/grok。
 
 ## 极速矩阵（派选锁定 · 主控 local · 2026-08-05 串行实弹）
@@ -123,7 +123,7 @@ grok -m grok-4.5 -p '…'
 claude --model 'glm-5.2-cc[1m]' -p '…'
 ```
 
-- **三轨并行**：dev wave 默认可 A+B+C 拆任务（**零文件重叠**）；一律 **tab 布局** + worktree（见 parallel 布局纪律）。  
+- **三轨并行**：develop wave 默认可 A+B+C 拆任务（**零文件重叠**）；一律 **tab 布局** + worktree（见 parallel 布局纪律）。  
 - **勿**写裸 `kimi -m k3`；256k 变体 `kimi-code/k3-256k` 非默认。  
 - **极速写码**仍用极速矩阵 kimi-hs@pi；**K3 / GLM 是开发主力**，不是 highspeed。
 
@@ -181,9 +181,9 @@ claude --model 'glm-5.2-cc[1m]' -p '…'
 |---|---|
 | `@speed/a`（kimi-hs） | pi |
 | `@speed/b`（flash） | codex |
-| `@dev/a` k3 · `@research/b` kimi-for-coding | kimi |
-| `@dev/b` · `@research/a` grok | grok |
-| `@dev/c` glm · `@review/a` opus | claude |
+| `@develop/a` k3 · `@research/b` kimi-for-coding | kimi |
+| `@develop/b` · `@research/a` grok | grok |
+| `@develop/c` glm · `@review/a` opus | claude |
 | `@review/b` gpt · `@research/c` pro | codex |
 
 ## 已知边界

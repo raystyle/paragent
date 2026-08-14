@@ -43,4 +43,4 @@ par.sh wave --mode review t-a=@review/a t-b=@review/b
 1. 预写各 `.parallel/<tid>/task.md`（范围：commit / PR / 工作区 diff / 文件列表）。  
 2. `par.sh wave --mode review t-a=@review/a t-b=@review/b`。  
 3. 收齐 artifact → 交叉比对 → 汇总报人。  
-4. 不 merge；改代码走 **dev** 原语。
+4. 不 merge；改代码走 **develop** 原语。

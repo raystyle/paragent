@@ -9,7 +9,7 @@
 | 窗 | 谁开 | agent 名 | 默认轨 |
 |---|---|---|---|
 | **主窗** | 人类自定（不代开） | — | 人类监督/干预 |
-| **右上 chief** | `triad open` | `triad-chief` | `@dev/a`（k3@kimi） |
+| **右上 chief** | `triad open` | `triad-chief` | `@develop/a`（k3@kimi） |
 | **右中 a** | `triad open` | `triad-a` | `@review/a`（Opus） |
 | **右下 b** | `triad open` | `triad-b` | `@review/b`（GPT 顶档） |
 
@@ -54,12 +54,12 @@ chief    被回话注入唤醒 → 综合 → report-metadata PAR-DONE triad-chi
 |---|---|
 | `research` | 拆 2 路只读探索子题；席位禁写仓库；产出 = 结论 + artifact 路径 |
 | `review` | 双席交叉审同一对象：a 找正确性问题，b 找设计/边界问题；互审对方结论后定稿 |
-| `ix`（默认） | 自由议题，双席各抒后互评，首席汇总 |
+| `discuss`（默认） | 自由议题，双席各抒后互评，首席汇总 |
 
 ## 命令
 
 ```bash
-par.sh triad open [--mode research|review|ix] [--chief|--a|--b <轨|cmd>] [--force]
+par.sh triad open [--mode research|review|discuss] [--chief|--a|--b <轨|cmd>] [--force]
 par.sh triad fire "题目"                 # 只派首席（附协作协议尾），火即返
 par.sh triad take [chief|a|b|--all] [--read] [--json]
 par.sh triad relay <triad-chief|triad-a|triad-b> "<回话>"   # 席位互注闸控通道（rc4 隔离/rc5 状态闸/rc6 主窗/rc7 上限）

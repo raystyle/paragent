@@ -21,13 +21,13 @@ par_matrix_resolve @no/such 2>/dev/null && fail "unknown-track-should-fail" || p
 # remote 档案：极速=flash · 开发=glm · 研究=pro · 审阅双轨不变
 export PAR_MATRIX_PROFILE=remote
 [ "$(par_matrix_resolve @speed/a)" = "codex -m deepseek-v4-flash-cx" ] && pass "remote-speed" || fail "remote-speed=$(par_matrix_resolve @speed/a)"
-[ "$(par_matrix_resolve @dev/a)" = "claude --model glm-5.2-cc[1m]" ] && pass "remote-dev" || fail "remote-dev"
+[ "$(par_matrix_resolve @develop/a)" = "claude --model glm-5.2-cc[1m]" ] && pass "remote-develop" || fail "remote-develop"
 [ "$(par_matrix_resolve @research/b)" = "codex -m deepseek-v4-pro-cx" ] && pass "remote-research" || fail "remote-research"
 [ "$(par_matrix_resolve @review/a)" = "claude --model claude-opus-4-8-cc[1m]" ] && pass "remote-review-a" || fail "remote-review-a"
 [ "$(par_matrix_resolve @review/b)" = "codex -m gpt-5.6-sol-cx" ] && pass "remote-review-b" || fail "remote-review-b"
 unset PAR_MATRIX_PROFILE
 # 前缀强制 remote（env 仍为 local）
-[ "$(par_matrix_resolve @remote/dev/c)" = "claude --model glm-5.2-cc[1m]" ] && pass "prefix-remote-dev" || fail "prefix-remote"
+[ "$(par_matrix_resolve @remote/develop/c)" = "claude --model glm-5.2-cc[1m]" ] && pass "prefix-remote-develop" || fail "prefix-remote"
 
 # token helpers
 d=$(par_token_done_cmd '${HERDR_PANE_ID}' t1 1 ok)

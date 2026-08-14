@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # par-run.sh — parallel 单任务派发(薄原语;拆分/判断归主 agent)
-# 用法: par-run.sh <task-id> <model-cmd|@matrix/track> [--mode dev|research|review] [--brief …] [--timeout-min N] [--attempt N] [--launch-only] [--layout tab|stack]
-#   model-cmd: 裸命令,或矩阵轨 @dev/a · @research/b · @review/a · @speed/flash（见 par_matrix_resolve）
+# 用法: par-run.sh <task-id> <model-cmd|@matrix/track> [--mode develop|research|review] [--brief …] [--timeout-min N] [--attempt N] [--launch-only] [--layout tab|stack]
+#   model-cmd: 裸命令,或矩阵轨 @develop/a · @research/b · @review/a · @speed/flash（见 par_matrix_resolve）
 #   布局: 一律 **tab**（每任务一 tab；agent 不开右侧窗格）；可 --layout stack 覆盖
-#   dev: worktree + tab；research/review: 无 worktree + tab（只读）
+#   develop: worktree + tab；research/review: 无 worktree + tab（只读）
 #   --launch-only: 只 recruit+dispatch,收割归 par_finish（par-wave 用）
 set -uo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/par-lib.sh"
 
-TID=${1:?usage: par-run.sh <task-id> <model-cmd|@matrix/track> [--mode dev|research|review] …}
-RAW_CMD=${2:?need <model-cmd> or @dev/a|@research/b|@review/a|…}
+TID=${1:?usage: par-run.sh <task-id> <model-cmd|@matrix/track> [--mode develop|research|review] …}
+RAW_CMD=${2:?need <model-cmd> or @develop/a|@research/b|@review/a|…}
 shift 2
 MODE=research; BRIEF=""; TMO_MIN=15; ATTEMPT=1; LAUNCH_ONLY=0; LAYOUT=""
 while [ $# -gt 0 ]; do
@@ -24,8 +24,8 @@ while [ $# -gt 0 ]; do
   esac
 done
 [[ "$TID" =~ ^[a-z][a-z0-9-]{1,32}$ ]] || { err "task-id 须匹配 [a-z][a-z0-9-]{1,32}: $TID"; exit 1; }
-[ "$MODE" = dev ] || [ "$MODE" = research ] || [ "$MODE" = review ] \
-  || { err "--mode 须 dev|research|review"; exit 1; }
+[ "$MODE" = develop ] || [ "$MODE" = research ] || [ "$MODE" = review ] \
+  || { err "--mode 须 develop|research|review"; exit 1; }
 [[ "$TMO_MIN" =~ ^[0-9]+$ && "$ATTEMPT" =~ ^[0-9]+$ ]] || { err "--timeout-min/--attempt 须为正整数"; exit 1; }
 
 # 布局: 默认 tab（每任务一 tab）；stack 仅显式 --layout 覆盖
@@ -40,7 +40,7 @@ par_preflight || exit 1
 WS=$(par_ws) || exit 1
 
 CWD=$PWD; BASE=""
-if [ "$MODE" = dev ]; then
+if [ "$MODE" = develop ]; then
   [ -d "$TD/wt" ] || git worktree add -B "par/$TID" "$TD/wt" HEAD >/dev/null 2>&1 \
     || { st failed; err "worktree add failed: $TD/wt"; exit 2; }
   CWD="$TD/wt"; BASE=$(git -C "$CWD" rev-parse HEAD 2>/dev/null)
@@ -123,7 +123,7 @@ if [ ! -f "$TD/task.md" ]; then
     else
       echo "- **交付(必须)**: 写非空 artifact.md 到 \`$TD/artifact.md\`(做了什么/结论/产出)"
     fi
-    [ "$MODE" = dev ] && echo "  代码改动在 worktree \`$CWD\` 内 git add -A && git commit(分支 par/$TID,留给主 agent review/merge)"
+    [ "$MODE" = develop ] && echo "  代码改动在 worktree \`$CWD\` 内 git add -A && git commit(分支 par/$TID,留给主 agent review/merge)"
     echo
     echo "## 任务"
     if [ "$MODE" = review ] && [ -z "${BRIEF:-}" ]; then

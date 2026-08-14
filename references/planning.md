@@ -9,7 +9,7 @@
 - **档位(model-cmd)在拷问阶段决策,且必须从 [references/models.md](models.md) 的三家验证矩阵选**(端写法纪律:claude `--model` / codex `-m` / pi `--model 供应商/id`);矩阵外型号先复验再入矩阵。
 - 共享理解达成前不动手。
 
-## dev 拆分原则(零重叠)
+## develop 拆分原则(零重叠)
 
 - 唯一硬规则:**任务间零文件重叠**(改同一文件的两个任务必须合并或串行)。
 - 每个子任务四要素:范围(哪些文件)/brief(做什么)/verify 命令(机械可跑,如 `cargo test xxx`)/档位(模型)。
@@ -25,10 +25,10 @@
 
 ```markdown
 # parallel plan: <目标一句话>
-- 模式: dev|research
+- 模式: develop|research
 - 路数: N(规划定)
 ## 任务
-| tid | 范围/问题 | 档位 | verify(dev) | thoroughness(research) |
+| tid | 范围/问题 | 档位 | verify(develop) | thoroughness(research) |
 |-----|-----------|------|-------------|------------------------|
 | t-xxx | ... | k3 | cargo test foo | - |
 ## 授权

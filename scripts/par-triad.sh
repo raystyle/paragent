@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # par-triad.sh — 三席原语（chief 首席 + a/b 双席 · 状态驱动互话 · 主控零轮询）
 # 用法:
-#   par-triad.sh open [--mode research|review|ix] [--chief|--a|--b <轨|cmd>] [--cwd DIR] [--force]
+#   par-triad.sh open [--mode research|review|discuss] [--chief|--a|--b <轨|cmd>] [--cwd DIR] [--force]
 #   par-triad.sh fire "<题>"        # 只 prompt 首席，火即返（禁 --wait）
 #   par-triad.sh take [chief|a|b|--all] [--read] [--json]   # 非阻塞收割；rc0 有货/rc3 无/rc2 无 session
 #   par-triad.sh collect [...]      # 编排糖 = wait→take（人类兜底；主路径靠席位回注）
@@ -16,14 +16,14 @@
 set -uo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/par-lib.sh"
 
-# 交互形态硬规则：任何路径都不得自动关窗（与 ix 同）
+# 交互形态硬规则：任何路径都不得自动关窗（与 discuss 同）
 export PAR_CLOSE_PANE=0
 
 TRIAD_ROOT="${PAR_TRIAD_DIR:-$PWD/.parallel/triad}"
-DEFAULT_CHIEF="@dev/a"      # k3@kimi
+DEFAULT_CHIEF="@develop/a"      # k3@kimi
 DEFAULT_A="@review/a"       # opus@claude
 DEFAULT_B="@review/b"       # gpt@codex
-MODE=ix                     # open --mode 覆盖；fire 读 session
+MODE=discuss                # open --mode 覆盖；fire 读 session
 
 usage() {
   sed -n '2,16p' "$0" | sed -n '/^#/s/^# \?//p'
@@ -288,7 +288,7 @@ _triad_load_session() {
     CWD=$(sed -n 's/^cwd=//p' "$TRIAD_ROOT/session" | head -1)
   fi
   CHIEF_CMD=${CHIEF_CMD:-}; A_CMD=${A_CMD:-}; B_CMD=${B_CMD:-}
-  MODE=${MODE:-ix}; CWD=${CWD:-$PWD}
+  MODE=${MODE:-discuss}; CWD=${CWD:-$PWD}
 }
 
 _triad_pane_of() {
@@ -304,8 +304,8 @@ _triad_mode_brief() {
   case "${1:-$MODE}" in
     research) printf 'mode=research 并行研究/分析：拆 2 路只读探索子题；席位禁写仓库，产出=结论+artifact 路径。' ;;
     review)   printf 'mode=review 并行 review/审核：双席交叉审同一对象；a 找正确性问题，b 找设计/边界问题；席位互审对方结论后再定稿。' ;;
-    ix)       printf 'mode=ix 并行合作/交流：自由议题，双席各抒后互评，首席汇总。' ;;
-    *)        printf 'mode=ix 并行合作/交流。' ;;
+    discuss)  printf 'mode=discuss 并行合作/交流：自由议题，双席各抒后互评，首席汇总。' ;;
+    *)        printf 'mode=discuss 并行合作/交流。' ;;
   esac
 }
 
@@ -380,7 +380,7 @@ cmd_open() {
   CWD=$PWD
   while [ $# -gt 0 ]; do
     case "$1" in
-      --mode)   [ -n "${2:-}" ] || { err "--mode 需要 research|review|ix"; exit 1; }
+      --mode)   [ -n "${2:-}" ] || { err "--mode 需要 research|review|discuss"; exit 1; }
         MODE=$2; mode_explicit=1; shift 2 ;;
       --chief)  [ -n "${2:-}" ] || { err "--chief 需要 <轨|cmd>"; exit 1; }
         raw_chief=$2; shift 2 ;;
@@ -398,9 +398,9 @@ cmd_open() {
   # 未显式 --mode：沿用既有 session 的 triad_mode（幂等重开不覆盖）
   if [ "$mode_explicit" != 1 ] && [ -f "$TRIAD_ROOT/session" ]; then
     MODE=$(sed -n 's/^triad_mode=//p' "$TRIAD_ROOT/session" | head -1)
-    MODE=${MODE:-ix}
+    MODE=${MODE:-discuss}
   fi
-  case "$MODE" in research|review|ix) ;; *) err "--mode 须 research|review|ix（got: $MODE）"; exit 1 ;; esac
+  case "$MODE" in research|review|discuss) ;; *) err "--mode 须 research|review|discuss（got: $MODE）"; exit 1 ;; esac
   [ -d "$CWD" ] || { err "cwd 不存在: $CWD"; exit 1; }
   CWD=$(cd "$CWD" && pwd -P)
   par_preflight || exit 1
