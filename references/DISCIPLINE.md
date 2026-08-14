@@ -82,3 +82,5 @@ herdr pane report-metadata "$HERDR_PANE_ID" --source parallel \
 - **窗格**:wave/run 默认可关任务 tab；**ix 交互不关右窗**，仅 `ix close`。
 - **herdr 原语注意**:report/send 族成功=空 stdout+rc0(判成功看退出码);新 pane `read --source recent` 可能为空(用 visible);顶层 `--help` 非全量命令清单(逐组 --help)。
 - **pi 长 prompt 限制**:pi 对长 prompt 可能进编辑器未提交——编排 prompt 保持短、内容一律落 task.md/verify.log;卡顿时主 agent 查 pane 实况手动 herdr pane send-keys <pane> enter。
+- **CLI 缺口后备通道**:CLI 动词不够用时直戳 socket——`nc -U $HERDR_SOCKET_PATH`（默认 `~/.config/herdr/herdr.sock`）发 `{"id","method","params"}` JSON 行（先例：pane-navigator 用 `pane.focus` 按 id 跳窗格，CLI `pane focus` 只能跳邻居、`agent focus` 拒绝非 agent 窗格）。
+- **关窗杀进程组**:herdr 关窗格杀整个进程组——在窗格内自杀式 close 会带走同组后续动作（nohup 不免；先 focus 目标再 close 自身）。编排一律从主窗对**别的**窗格 close。
