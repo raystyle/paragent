@@ -167,6 +167,18 @@ echo "$JSON_R" | jq -e . >/dev/null && pass "route-json-parse" || fail "route js
 echo "$JSON_R" | grep -q 'PAR-ROUTE-PASS' && fail "PASS 污染 stdout" || pass "route-json-stdout-clean"
 grep -q 'PAR-ROUTE-PASS' /tmp/triad-pass.err && pass "route-pass-stderr" || fail "PASS 未进 stderr"
 
+# ── status urgency 序（借鉴 pane-navigator）：blocked 浮前 ──
+echo working > "$STUB_DIR/status-$CHIEF_PANE"
+echo blocked > "$STUB_DIR/status-$A_PANE"
+echo idle > "$STUB_DIR/status-$B_PANE"
+OUT_S=$(bash "$TRIAD" status 2>&1) || fail "status rc"
+LB=$(printf '%s\n' "$OUT_S" | grep -n 'status=blocked' | head -1 | cut -d: -f1)
+LW=$(printf '%s\n' "$OUT_S" | grep -n 'status=working' | head -1 | cut -d: -f1)
+LI=$(printf '%s\n' "$OUT_S" | grep -n 'status=idle' | head -1 | cut -d: -f1)
+[ -n "$LB" ] && [ -n "$LW" ] && [ -n "$LI" ] && [ "$LB" -lt "$LW" ] && [ "$LW" -lt "$LI" ] \
+  && pass "status-urgency-order" || fail "urgency 序错（b=$LB w=$LW i=$LI）: $OUT_S"
+rm -f "$STUB_DIR"/status-*
+
 # ── close-tasks 不关 triad 三席 ──
 # shellcheck disable=SC1091
 . "$PAR_LIB"

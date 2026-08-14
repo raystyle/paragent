@@ -410,11 +410,15 @@ cmd_status() {
         codex:{slot:"b",pane:$xp,cmd:$xc,status:$xs,ready:$rb}}'
     return 0
   fi
-  echo "parallel: ix status (async progressive；take 以 par_result 为准)"
-  printf '  a/claude  pane=%s  status=%s  %s  cmd=%s\n' \
-    "${CLAUDE_PANE:-?}" "$st_c" "$([ "$ra" = true ] && echo READY || echo busy)" "${CLAUDE_CMD:-?}"
-  printf '  b/codex   pane=%s  status=%s  %s  cmd=%s\n' \
-    "${CODEX_PANE:-?}" "$st_x" "$([ "$rb" = true ] && echo READY || echo busy)" "${CODEX_CMD:-?}"
+  echo "parallel: ix status (async progressive；take 以 par_result 为准；urgency 序)"
+  {
+    printf '%s\t  a/claude  pane=%s  status=%s  %s  cmd=%s\n' \
+      "$(par_status_urgency "$st_c")" \
+      "${CLAUDE_PANE:-?}" "$st_c" "$([ "$ra" = true ] && echo READY || echo busy)" "${CLAUDE_CMD:-?}"
+    printf '%s\t  b/codex   pane=%s  status=%s  %s  cmd=%s\n' \
+      "$(par_status_urgency "$st_x")" \
+      "${CODEX_PANE:-?}" "$st_x" "$([ "$rb" = true ] && echo READY || echo busy)" "${CODEX_CMD:-?}"
+  } | sort -n -k1,1 | cut -f2-
   echo "  pace=async  完成真源=tokens.par_result（tid#attempt）"
 }
 

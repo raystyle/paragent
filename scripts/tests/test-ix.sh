@@ -157,6 +157,17 @@ echo "$JSON_R" | jq -e . >/dev/null && pass "route-json-parse" || fail "route js
 echo "$JSON_R" | grep -q 'PAR-ROUTE-PASS' && fail "PASS 污染 stdout" || pass "route-json-stdout-clean"
 grep -q 'PAR-ROUTE-PASS' /tmp/ix-pass.err && pass "route-pass-stderr" || fail "PASS 未进 stderr"
 
+# ── status urgency 序：blocked 浮前 ──
+CP=$(cat .parallel/ix-claude/pane); XP=$(cat .parallel/ix-codex/pane)
+echo working > "$STUB_DIR/status-$CP"
+echo blocked > "$STUB_DIR/status-$XP"
+OUT_S=$(bash "$IX" status 2>&1) || fail "ix status rc"
+LB=$(printf '%s\n' "$OUT_S" | grep -n 'status=blocked' | head -1 | cut -d: -f1)
+LW=$(printf '%s\n' "$OUT_S" | grep -n 'status=working' | head -1 | cut -d: -f1)
+[ -n "$LB" ] && [ -n "$LW" ] && [ "$LB" -lt "$LW" ] \
+  && pass "ix-status-urgency-order" || fail "ix urgency 序错（b=$LB w=$LW）: $OUT_S"
+rm -f "$STUB_DIR"/status-*
+
 # ── close-tasks 跳过 ix（经 par_close_all_task_panes）──
 # shellcheck disable=SC1091
 . "$PAR_LIB"

@@ -91,7 +91,11 @@ case "$cmd $1" in
       echo "${BASH_REMATCH[1]}#${BASH_REMATCH[2]}" > "$STUB_DIR/anchor-$2"
     fi
     echo '{"result":{"type":"agent_prompted"}}' ;;
-  "agent get")      printf '{"result":{"agent":{"agent":"pi","agent_status":"%s"}}}\n' "${STUB_AGENT_STATUS:-idle}" ;;
+  "agent get")
+    # per-pane 覆盖：$STUB_DIR/status-<pane> 优先于全局 STUB_AGENT_STATUS
+    pane=$2
+    if [ -f "$STUB_DIR/status-$pane" ]; then st=$(cat "$STUB_DIR/status-$pane"); else st=${STUB_AGENT_STATUS:-idle}; fi
+    printf '{"result":{"agent":{"agent":"pi","agent_status":"%s"}}}\n' "$st" ;;
   "agent wait")
     pane=$2
     [ "${STUB_WAIT_FAIL:-0}" = 1 ] && { sleep "${STUB_WAIT_SECS:-0}"; exit 1; }

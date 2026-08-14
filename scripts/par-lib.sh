@@ -21,6 +21,14 @@ PAR_HOME="${PAR_HOME:-$(cd "$PAR_LIB_DIR/.." && pwd)}"
 # dyn_title 侧栏集成（可选）：指向外部 layout_lib/snippet；缺省空 = 不写 dyn（herdr 官方默认 sidebar 无 $dyn_title）
 PAR_LAYOUT_LIB="${PAR_LAYOUT_LIB:-}"
 PAR_SIDEBAR_SNIP="${PAR_SIDEBAR_SNIP:-}"
+# urgency 序（借鉴 herdr-pane-navigator）：blocked < done < working < idle < 其他
+# status 面板按此排序——最需人处理的席浮前
+par_status_urgency() {
+  case "$1" in
+    blocked) echo 0 ;; done) echo 1 ;; working) echo 2 ;; idle) echo 3 ;; *) echo 4 ;;
+  esac
+}
+
 # 矩阵档案：local=主控满矩阵；remote=远程 CPA 子集（见 matrix-remote.json / models.md）
 # 覆盖：PAR_MATRIX_PROFILE=local|remote · 或轨前缀 @remote/dev/a · PAR_MATRIX_JSON 强制表路径
 PAR_MATRIX_PROFILE="${PAR_MATRIX_PROFILE:-local}"

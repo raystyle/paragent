@@ -487,13 +487,18 @@ cmd_status() {
         b:{slot:"b",pane:$bp,cmd:$bc,status:$bs,ready:$rb}}'
     return 0
   fi
-  echo "parallel: triad status (peer-driven；take 以 par_result 为准)"
-  printf '  chief  pane=%s  status=%s  %s  cmd=%s\n' \
-    "${CHIEF_PANE:-?}" "$st_chief" "$([ "$rc" = true ] && echo READY || echo busy)" "${CHIEF_CMD:-?}"
-  printf '  a      pane=%s  status=%s  %s  cmd=%s\n' \
-    "${A_PANE:-?}" "$st_a" "$([ "$ra" = true ] && echo READY || echo busy)" "${A_CMD:-?}"
-  printf '  b      pane=%s  status=%s  %s  cmd=%s\n' \
-    "${B_PANE:-?}" "$st_b" "$([ "$rb" = true ] && echo READY || echo busy)" "${B_CMD:-?}"
+  echo "parallel: triad status (peer-driven；take 以 par_result 为准；urgency 序)"
+  {
+    printf '%s\t  chief  pane=%s  status=%s  %s  cmd=%s\n' \
+      "$(par_status_urgency "$st_chief")" \
+      "${CHIEF_PANE:-?}" "$st_chief" "$([ "$rc" = true ] && echo READY || echo busy)" "${CHIEF_CMD:-?}"
+    printf '%s\t  a      pane=%s  status=%s  %s  cmd=%s\n' \
+      "$(par_status_urgency "$st_a")" \
+      "${A_PANE:-?}" "$st_a" "$([ "$ra" = true ] && echo READY || echo busy)" "${A_CMD:-?}"
+    printf '%s\t  b      pane=%s  status=%s  %s  cmd=%s\n' \
+      "$(par_status_urgency "$st_b")" \
+      "${B_PANE:-?}" "$st_b" "$([ "$rb" = true ] && echo READY || echo busy)" "${B_CMD:-?}"
+  } | sort -n -k1,1 | cut -f2-
   echo "  pace=peer-driven  完成真源=tokens.par_result（triad-<role>#<chief-attempt>）"
 }
 
